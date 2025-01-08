@@ -5,17 +5,20 @@ import Form from 'next/form';
 import { useActionState, useEffect } from "react";
 import { handleSignin } from "./actions";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function SigninPage() {
   const [state, formAction, isPending] = useActionState(handleSignin, null);
 
   useEffect(() => {
-    const toastType = state.success ? "success" : "error";
-    toast(state.message, { type: toastType });
+    if (state) {
+      const toastType = state.success ? "success" : "error";
+      toast(state.message, { type: toastType });
 
-    if(state.success) {
-      localStorage.setItem('token', state.data.token);
-      window.location.href = '/dashboard';
+      if (state.success) {
+        localStorage.setItem('token', state.data.token);
+        window.location.href = '/dashboard';
+      }
     }
   }, [state]);
 
@@ -39,6 +42,9 @@ export default function SigninPage() {
                   <i className="bi bi-lock-fill"></i>
                 </TextField.Slot>
               </TextField.Root>
+              <Text size="1">
+                <a href="/forgotPassword">Forgot password?</a>
+              </Text>
               <Button type="submit" disabled={isPending} variant={isPending ? "classic" : "solid"}>
                 {isPending && (<Spinner loading />)}
                 Sign in
