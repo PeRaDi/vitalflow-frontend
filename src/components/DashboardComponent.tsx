@@ -21,7 +21,7 @@ import {
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
 import { useRouter } from "next/router";
-import { handleSignout } from "@/modules/auth/authActions";
+import { handleSignout } from "@/modules/auth/authService";
 
 function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useAuth();
@@ -34,7 +34,11 @@ function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
       icon: HomeIcon,
     },
     { name: "Users", href: "/dashboard/users", icon: PersonIcon },
-    { name: "Tenants", href: "/dashboard/tenants", icon: BoxModelIcon },
+    {
+      name: "Institutions",
+      href: "/dashboard/institutions",
+      icon: BoxModelIcon,
+    },
     { name: "Settings", href: "/dashboard/settings", icon: GearIcon },
   ];
 

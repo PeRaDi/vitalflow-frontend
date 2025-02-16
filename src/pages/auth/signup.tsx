@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { handleSignup, handleVerifyToken } from "@/modules/auth/authActions";
+import { handleSignup, handleVerifyToken } from "@/modules/auth/authService";
 import { SignupDto } from "@/modules/auth/dtos/signup.dto";
 import {
   Box,

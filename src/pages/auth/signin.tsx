@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { handleSignin, handleVerifyToken } from "@/modules/auth/authActions";
+import { handleSignin, handleVerifyToken } from "@/modules/auth/authService";
 import { SigninDto } from "@/modules/auth/dtos/signin.dto";
 import {
   Box,

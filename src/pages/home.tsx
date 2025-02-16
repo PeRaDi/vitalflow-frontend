@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { handleVerifyToken } from "@/modules/auth/authActions";
+import { handleVerifyToken } from "@/modules/auth/authService";
 import { Box, Button, Card, Flex, Heading, Separator } from "@radix-ui/themes";
 import { useRouter } from "next/router";
 import { useEffect } from "react";

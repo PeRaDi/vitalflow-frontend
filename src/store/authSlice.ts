@@ -1,4 +1,4 @@
-import { handleSignout } from "@/modules/auth/authActions";
+import { handleSignout } from "@/modules/auth/authService";
 import { User } from "@/types/user";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
