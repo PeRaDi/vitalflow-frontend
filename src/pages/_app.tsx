@@ -31,7 +31,7 @@ export default function RootLayout({ Component, pageProps }: AppProps) {
             >
               <Component {...pageProps} />
               <ToastContainer
-                position="bottom-right"
+                position="bottom-center"
                 autoClose={5000}
                 closeButton={false}
                 hideProgressBar={false}

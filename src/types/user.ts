@@ -2,7 +2,7 @@ import { Role } from "./role";
 import { Tenant } from "./tenant";
 
 export interface User {
-  id: string;
+  id: number;
   name: string;
   email: string;
   username: string;
@@ -10,4 +10,5 @@ export interface User {
   role: Role;
   createdAt: string;
   updatedAt: string;
+  active: boolean;
 }

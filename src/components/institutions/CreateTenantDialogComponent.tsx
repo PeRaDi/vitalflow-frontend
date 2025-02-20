@@ -1,6 +1,6 @@
 import AddContactsDto from "@/modules/tenants/dtos/contact.dto";
 import { CreateTenantDto } from "@/modules/tenants/dtos/tenant.dto";
-import { addContacts, createTenant } from "@/modules/tenants/tenantsService";
+import { addContacts, create } from "@/modules/tenants/tenantsService";
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
 import {
   Button,
@@ -34,7 +34,7 @@ export default function CreateTenantDialogComponent({
 
     try {
       const tenant: CreateTenantDto = { name, email, address };
-      const createResponse = await createTenant(tenant);
+      const createResponse = await create(tenant);
 
       if (!createResponse.success) {
         toast("An error occurred creating the institution.", { type: "error" });

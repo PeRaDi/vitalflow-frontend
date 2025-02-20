@@ -35,7 +35,7 @@ body {
 .Toastify__toast-theme--dark.Toastify__toast--default {    
   backdrop-filter: blur(0px) saturate(200%);
   -webkit-backdrop-filter: blur(0px) saturate(200%);
-  background-color: rgba(14, 42, 26, 0.6);
+  background-color: rgba(14, 42, 26, 1);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
 }
@@ -43,7 +43,7 @@ body {
 .Toastify__toast-theme--dark.Toastify__toast--info {    
   backdrop-filter: blur(0px) saturate(200%);
   -webkit-backdrop-filter: blur(0px) saturate(200%);
-  background-color: rgba(14, 42, 26, 0.6);
+  background-color: rgba(14, 42, 26, 1);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
 }
@@ -52,7 +52,7 @@ body {
 .Toastify__toast-theme--dark.Toastify__toast--success {
   backdrop-filter: blur(0px) saturate(200%);
   -webkit-backdrop-filter: blur(0px) saturate(200%);
-  background-color: rgba(14, 42, 26, 0.6);
+  background-color: rgba(14, 42, 26, 1);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
 }
@@ -60,7 +60,7 @@ body {
 .Toastify__toast-theme--dark.Toastify__toast--warning {
   backdrop-filter: blur(0px) saturate(200%);
   -webkit-backdrop-filter: blur(0px) saturate(200%);
-  background-color: rgba(52, 43, 11, 0.6);
+  background-color: rgba(52, 43, 11, 1);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
 }
@@ -68,7 +68,7 @@ body {
 .Toastify__toast-theme--dark.Toastify__toast--error {
   backdrop-filter: blur(0px) saturate(200%);
   -webkit-backdrop-filter: blur(0px) saturate(200%);
-  background-color: rgba(62, 17, 7, 0.6);
+  background-color: rgba(62, 17, 7, 1);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
 }
