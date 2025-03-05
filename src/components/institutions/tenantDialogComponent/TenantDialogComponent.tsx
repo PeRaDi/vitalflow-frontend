@@ -7,9 +7,12 @@ import {
   Dialog,
   Flex,
   Switch,
+  Tabs,
 } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
-import UsersTabComponent from "./UsersTabComponent";
+import StatsTabComponent from "./tabs/StatsTabComponent";
+import UsersTabComponent from "./tabs/UsersTabComponent";
+import InvitedUsersTabComponent from "./tabs/InvitedUsersTabComponent";
 
 interface TenantDialogComponentProps {
   tenant: Tenant;
@@ -30,9 +33,7 @@ export default function TenantDialogComponent({
   const [active, setActive] = useState(tenant.active);
 
   const handleClose = () => {
-    if (edited) {
-      setSaveAlertDialogOpen(true);
-    }
+    if (edited) setSaveAlertDialogOpen(true);
     setOpen(false);
   };
 
@@ -155,7 +156,31 @@ export default function TenantDialogComponent({
               </Flex>
             </Flex>
             <Flex width="58%">
-              <UsersTabComponent tenant={tenant} />
+              <Tabs.Root defaultValue="stats" style={{ width: "100%" }}>
+                <Tabs.List>
+                  <Tabs.Trigger value="stats">Statistics</Tabs.Trigger>
+                  <Tabs.Trigger value="users">Users</Tabs.Trigger>
+                  <Tabs.Trigger value="invite-user">Invite User</Tabs.Trigger>
+                </Tabs.List>
+
+                <Tabs.Content
+                  value="stats"
+                  style={{ height: "220px", overflow: "hidden" }}
+                >
+                  <StatsTabComponent tenant={tenant} />
+                </Tabs.Content>
+
+                <Tabs.Content
+                  value="users"
+                  style={{ height: "220px", overflow: "hidden" }}
+                >
+                  <UsersTabComponent tenant={tenant} />
+                </Tabs.Content>
+
+                <Tabs.Content value="invite-user" style={{ height: "220px" }}>
+                  <InvitedUsersTabComponent tenant={tenant} />
+                </Tabs.Content>
+              </Tabs.Root>
             </Flex>
             <Button variant="ghost" onClick={() => handleClose()}>
               <Cross1Icon height="16" width="16" />

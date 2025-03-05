@@ -84,7 +84,7 @@ export async function toggle(tenantId: number): Promise<any> {
         success: false,
         message: response.data.message,
       };
-    console.log(response);
+
     return {
       success: true,
       message: "Successfully toggled tenant.",
