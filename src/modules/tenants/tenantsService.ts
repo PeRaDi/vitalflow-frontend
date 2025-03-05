@@ -1,7 +1,7 @@
-import api from "../api";
-import { CreateTenantDto } from "./dtos/tenant.dto";
-import AddContactsDto from "./dtos/contact.dto";
 import { Tenant } from "@/types/tenant";
+import api from "../api";
+import AddContactsDto from "./dtos/contact.dto";
+import { CreateTenantDto } from "./dtos/tenant.dto";
 
 export async function getTenants(): Promise<any> {
   try {
@@ -148,60 +148,6 @@ export async function getUsers(tenantId: number): Promise<any> {
     return {
       success: false,
       message: "An unknown error occurred retrieving users.",
-    };
-  }
-}
-
-export async function getInvitedUsers(tenantId: number): Promise<any> {
-  try {
-    const response = await api.get(`/tenants/${tenantId}/invites`, {
-      withCredentials: true,
-    });
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
-
-    return {
-      success: true,
-      message: "Successfully retrieved invited users.",
-      invitedUsers: response.data,
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      success: false,
-      message: "An unknown error occurred retrieving invited users.",
-    };
-  }
-}
-
-export async function inviteUser(
-  tenantId: number,
-  email: string,
-  roleId: number
-): Promise<any> {
-  try {
-    const response = await api.post(
-      `/tenants/${tenantId}/invite`,
-      { email, roleId },
-      {
-        withCredentials: true,
-      }
-    );
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
-
-    return {
-      success: true,
-      message: "Successfully invited user.",
-      invite: response.data,
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      success: false,
-      message: "An unknown error occurred inviting user.",
     };
   }
 }

@@ -34,7 +34,7 @@ export default function UsersTabComponent({ tenant }: UsersTabComponentProps) {
     const response = await toggleUser(userId);
 
     if (!response.success) {
-      toast("An error occurred toggling user.", { type: "error" });
+      toast(response.message, { type: "error" });
       console.error(response.message);
       return;
     }

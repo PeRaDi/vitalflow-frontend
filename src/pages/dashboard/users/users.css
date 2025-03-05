@@ -12,6 +12,8 @@
     z-index: 0;
 }
 
-.cell {
-    vertical-align: middle;
+.table-body > .table-row {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }

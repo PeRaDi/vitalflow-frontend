@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "./authSlice";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import authReducer from "./authSlice";
+import invitedUsersReducer from "./invitedUsersSlice";
 import tenantsReducer from "./tenantsSlice";
 import usersReducer from "./usersSlice";
-import storage from "redux-persist/lib/storage";
-import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 const persistConfig = {
   key: "auth",
@@ -18,6 +19,7 @@ export const store = configureStore({
     auth: persistedAuthReducer,
     tenants: tenantsReducer,
     users: usersReducer,
+    invitedUsers: invitedUsersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

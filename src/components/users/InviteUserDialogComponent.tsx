@@ -1,17 +1,11 @@
-import AddContactsDto from "@/modules/tenants/dtos/contact.dto";
-import { CreateTenantDto } from "@/modules/tenants/dtos/tenant.dto";
-import {
-  addContacts,
-  create,
-  getTenants,
-} from "@/modules/tenants/tenantsService";
+import { getTenants } from "@/modules/tenants/tenantsService";
+import { inviteUser } from "@/modules/users/invitedUsersService";
 import { Tenant } from "@/types/tenant";
-import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+import { PlusIcon } from "@radix-ui/react-icons";
 import {
   Button,
   Dialog,
   Flex,
-  IconButton,
   Select,
   Text,
   TextField,
@@ -20,18 +14,16 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 interface InviteUserDialogComponentProps {
-  reloadUsers: () => void;
+  reloadInvitedUsers: () => void;
 }
 
 export default function InviteUserDialogComponent({
-  reloadUsers,
+  reloadInvitedUsers,
 }: InviteUserDialogComponentProps) {
-  // const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("user");
-  const [tenant, setTenant] = useState("");
+  const [tenant, setTenant] = useState<number>();
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  // const [address, setAddress] = useState("");
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -53,65 +45,35 @@ export default function InviteUserDialogComponent({
     }
   }, [open]);
 
-  // const [contacts, setContacts] = useState<
-  //   { index: number; contact: number; info: string }[]
-  // >([]);
-
-  const handleSave = async (e: React.FormEvent) => {
+  const handleInvite = async (e: React.FormEvent) => {
+    if (!tenant || !email || !role) return;
     e.preventDefault();
-    console.log(email, role, tenant);
 
-    //   try {
-    //     const tenant: CreateTenantDto = { name, email, address };
-    //     const createResponse = await create(tenant);
+    try {
+      const roleId = role === "user" ? 2 : 3;
+      const response = await inviteUser(tenant, email, roleId);
 
-    //     if (!createResponse.success) {
-    //       toast("An error occurred creating the institution.", { type: "error" });
-    //       setOpen(false);
-    //       return;
-    //     }
-
-    //     if (contacts.length === 0) {
-    //       toast("Institution created successfully.", { type: "success" });
-    //       setOpen(false);
-    //       return;
-    //     }
-
-    //     const tenantsContacts: AddContactsDto = {
-    //       contacts: contacts.map((contact) => ({
-    //         contact: contact.contact,
-    //         info: contact.info,
-    //       })),
-    //     };
-
-    //     const addContactsResponse = await addContacts(
-    //       createResponse.tenant.id,
-    //       tenantsContacts
-    //     );
-
-    //     if (!addContactsResponse.success) {
-    //       toast("An error occured adding contacts to the institution.", {
-    //         type: "error",
-    //       });
-    //       setOpen(false);
-    //       return;
-    //     }
-
-    //     toast("Institution created successfully.", { type: "success" });
-    //     reloadTenants();
-    //     setOpen(false);
-    //   } catch (error) {
-    //     toast("An error occurred creating the institution.", { type: "error" });
-    //     setOpen(false);
-    //     console.error(error);
-    //   }
+      if (!response.success) {
+        toast("An error occurred inviting a user.", { type: "error" });
+        setOpen(false);
+        return;
+      }
+      toast("User invited successfully.", { type: "success" });
+    } catch (error) {
+      toast("An error occurred inviting a user.", { type: "error" });
+      setOpen(false);
+    } finally {
+      reloadInvitedUsers();
+      setOpen(false);
+    }
   };
 
   const handleCancel = () => {
     setEmail("");
-    setRole("");
-    setOpen(false);
+    setRole("user");
+    setTenant(undefined);
     setTenants([]);
+    setOpen(false);
   };
 
   return (
@@ -127,7 +89,7 @@ export default function InviteUserDialogComponent({
         <Dialog.Description size="2" mb="4">
           Fill the form below to invite a new user to a tenant.
         </Dialog.Description>
-        <form onSubmit={handleSave}>
+        <form onSubmit={handleInvite}>
           <Flex direction="row" gap="3" justify={"between"}>
             <label style={{ width: "35%" }}>
               <Text as="div" size="2" mb="1" weight="bold">
@@ -159,7 +121,7 @@ export default function InviteUserDialogComponent({
               <Text as="div" size="2" mb="1" weight="bold">
                 Tenant
               </Text>
-              <Select.Root value={tenant} onValueChange={setTenant}>
+              <Select.Root onValueChange={(value) => setTenant(Number(value))}>
                 <Select.Trigger mb="2" style={{ width: "100%" }} />
                 <Select.Content>
                   <Select.Group>
@@ -181,7 +143,7 @@ export default function InviteUserDialogComponent({
                 Cancel
               </Button>
             </Dialog.Close>
-            <Button type="submit">Save</Button>
+            <Button type="submit">Invite</Button>
           </Flex>
         </form>
       </Dialog.Content>

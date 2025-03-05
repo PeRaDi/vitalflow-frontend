@@ -1,19 +1,27 @@
+import DashboardLayout from "@/components/DashboardComponent";
+import InviteUserDialogComponent from "@/components/users/InviteUserDialogComponent";
+import { getInvitedUsers } from "@/modules/users/invitedUsersService";
+import { getUsers, toggleUser } from "@/modules/users/usersService";
+import { setInvitedUsers } from "@/store/invitedUsersSlice";
+import { setUsers, updateUser } from "@/store/usersSlice";
+import { User } from "@/types/user";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Card, Flex, Switch, Table, Tabs, TextField } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { Flex, Card, Table, Switch, TextField } from "@radix-ui/themes";
-import DashboardLayout from "@/components/DashboardComponent";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { User } from "@/types/user";
-import { getUsers, toggleUser } from "@/modules/users/usersService";
-import { setUsers, updateUser } from "@/store/usersSlice";
-import InviteUserDialogComponent from "@/components/users/InviteUserDialogComponent";
+import "./users.css";
 
 export default function DashboardUsers() {
   const dispatch = useDispatch();
   const users = useSelector((state: { users: { users: User[] } }) => {
     return state.users.users;
   });
+  const invitedUsers = useSelector(
+    (state: { invitedUsers: { invitedUsers: User[] } }) => {
+      return state.invitedUsers.invitedUsers;
+    }
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +31,6 @@ export default function DashboardUsers() {
 
     if (!response.success) {
       toast("An error occurred retrieving users.", { type: "error" });
-      console.error(response.message);
       return;
     }
 
@@ -31,11 +38,23 @@ export default function DashboardUsers() {
     setLoading(false);
   };
 
+  const loadInvitedUsers = async () => {
+    setLoading(true);
+    const response = await getInvitedUsers();
+
+    if (!response.success) {
+      toast("An error occurred retrieving invited users.", { type: "error" });
+      return;
+    }
+
+    dispatch(setInvitedUsers(response.users));
+    setLoading(false);
+  };
+
   const handleToggleUser = async (userId: number) => {
     const response = await toggleUser(userId);
     if (!response.success) {
-      toast("An error occurred toggling user.", { type: "error" });
-      console.error(response.message);
+      toast(response.message, { type: "error" });
       return;
     }
 
@@ -55,6 +74,7 @@ export default function DashboardUsers() {
 
   useEffect(() => {
     loadUsers();
+    loadInvitedUsers();
   }, []);
 
   const filteredUsers = users
@@ -66,68 +86,156 @@ export default function DashboardUsers() {
     )
     .sort((a, b) => a.id - b.id);
 
+  const filteredInvitedUsers = invitedUsers
+    .filter(
+      (invitedUser: any) =>
+        invitedUser.id.toString().includes(searchQuery.toLowerCase()) ||
+        invitedUser.email.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => a.id - b.id);
+
   return (
     <DashboardLayout>
-      <Flex height="98vh" direction="column" justify="center" gap="4">
-        <Card style={{ height: "5vh" }}>
-          <Flex width="100%" justify="between" align="center">
-            <TextField.Root
-              style={{ width: "90%" }}
-              placeholder="Search Users"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            >
-              <TextField.Slot>
-                <MagnifyingGlassIcon height="16" width="16" />
-              </TextField.Slot>
-            </TextField.Root>
-            <InviteUserDialogComponent reloadUsers={loadUsers} />
-          </Flex>
-        </Card>
-        <Card style={{ height: "90vh" }}>
-          <Table.Root style={{ height: "100%" }}>
-            <Table.Header className="table-header">
-              <Table.Row>
-                <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Active</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body className="table-body">
-              {loading ? (
-                <Table.Row>
-                  <Table.Cell colSpan={6}>Loading...</Table.Cell>
-                </Table.Row>
-              ) : filteredUsers.length === 0 ? (
-                <Table.Row>
-                  <Table.Cell colSpan={6}>No users found.</Table.Cell>
-                </Table.Row>
-              ) : (
-                filteredUsers.map((user) => (
-                  <Table.Row key={user.id}>
-                    <Table.Cell>{user.id}</Table.Cell>
-                    <Table.Cell>{user.name}</Table.Cell>
-                    <Table.Cell>{user.email}</Table.Cell>
-                    <Table.Cell>
-                      <Switch
-                        checked={user.active}
-                        onClick={() => handleToggleUser(user.id)}
-                      />
-                    </Table.Cell>
-                    <Table.Cell>
-                      {/* <UserDialogComponent
+      <Flex height="98vh" direction="column" justify="between">
+        <Tabs.Root defaultValue="users" style={{ height: "5vh" }}>
+          <Tabs.List>
+            <Tabs.Trigger value="users">Users</Tabs.Trigger>
+            <Tabs.Trigger value="invited">Invited users</Tabs.Trigger>
+          </Tabs.List>
+
+          <Tabs.Content value="users">
+            <Flex direction="column" pt="1">
+              <Card variant="ghost" style={{ height: "7vh" }}>
+                <Flex
+                  width="100%"
+                  height="100%"
+                  justify="between"
+                  align="center"
+                >
+                  <TextField.Root
+                    style={{ width: "90%" }}
+                    placeholder="Search Users"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  >
+                    <TextField.Slot>
+                      <MagnifyingGlassIcon height="16" width="16" />
+                    </TextField.Slot>
+                  </TextField.Root>
+                  <InviteUserDialogComponent
+                    reloadInvitedUsers={loadInvitedUsers}
+                  />
+                </Flex>
+              </Card>
+              <Card style={{ height: "89vh" }}>
+                <Table.Root style={{ height: "100%" }}>
+                  <Table.Header className="table-header">
+                    <Table.Row>
+                      <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Role</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Active</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body className="table-body">
+                    {loading ? (
+                      <Table.Row>
+                        <Table.Cell colSpan={6}>Loading...</Table.Cell>
+                      </Table.Row>
+                    ) : filteredUsers.length === 0 ? (
+                      <Table.Row>
+                        <Table.Cell colSpan={6}>No users found.</Table.Cell>
+                      </Table.Row>
+                    ) : (
+                      filteredUsers.map((user) => (
+                        <Table.Row key={user.id}>
+                          <Table.Cell>{user.id}</Table.Cell>
+                          <Table.Cell>{user.name}</Table.Cell>
+                          <Table.Cell>{user.email}</Table.Cell>
+                          <Table.Cell>{user.role.displayName}</Table.Cell>
+                          <Table.Cell>
+                            <Switch
+                              checked={user.active}
+                              onClick={() => handleToggleUser(user.id)}
+                            />
+                          </Table.Cell>
+                          <Table.Cell>
+                            {/* <UserDialogComponent
                         tenant={user}
                         updateTenant={handleUpdateUser}
                       /> */}
-                    </Table.Cell>
-                  </Table.Row>
-                ))
-              )}
-            </Table.Body>
-          </Table.Root>
-        </Card>
+                          </Table.Cell>
+                        </Table.Row>
+                      ))
+                    )}
+                  </Table.Body>
+                </Table.Root>
+              </Card>
+            </Flex>
+          </Tabs.Content>
+          <Tabs.Content value="invited">
+            <Flex direction="column" pt="1">
+              <Card variant="ghost" style={{ height: "7vh" }}>
+                <Flex
+                  width="100%"
+                  height="100%"
+                  justify="between"
+                  align="center"
+                >
+                  <TextField.Root
+                    style={{ width: "90%" }}
+                    placeholder="Search Invited Users"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  >
+                    <TextField.Slot>
+                      <MagnifyingGlassIcon height="16" width="16" />
+                    </TextField.Slot>
+                  </TextField.Root>
+                  <InviteUserDialogComponent
+                    reloadInvitedUsers={loadInvitedUsers}
+                  />
+                </Flex>
+              </Card>
+              <Card style={{ height: "89vh" }}>
+                <Table.Root style={{ height: "100%" }}>
+                  <Table.Header className="table-header">
+                    <Table.Row>
+                      <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Tenant</Table.ColumnHeaderCell>
+                      <Table.ColumnHeaderCell>Role</Table.ColumnHeaderCell>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body className="table-body">
+                    {loading ? (
+                      <Table.Row>
+                        <Table.Cell colSpan={6}>Loading...</Table.Cell>
+                      </Table.Row>
+                    ) : filteredInvitedUsers.length === 0 ? (
+                      <Table.Row>
+                        <Table.Cell colSpan={6}>
+                          No invited users found.
+                        </Table.Cell>
+                      </Table.Row>
+                    ) : (
+                      filteredInvitedUsers.map((user) => (
+                        <Table.Row key={user.id}>
+                          <Table.Cell>{user.id}</Table.Cell>
+                          <Table.Cell>{user.email}</Table.Cell>
+                          <Table.Cell>{user.tenant.name}</Table.Cell>
+                          <Table.Cell>{user.role.displayName}</Table.Cell>
+                        </Table.Row>
+                      ))
+                    )}
+                  </Table.Body>
+                </Table.Root>
+              </Card>
+            </Flex>
+          </Tabs.Content>
+        </Tabs.Root>
       </Flex>
     </DashboardLayout>
   );

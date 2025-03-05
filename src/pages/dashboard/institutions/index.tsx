@@ -1,14 +1,14 @@
+import DashboardLayout from "@/components/DashboardComponent";
+import CreateTenantDialogComponent from "@/components/institutions/CreateTenantDialogComponent";
+import TenantDialogComponent from "@/components/institutions/tenantDialogComponent/TenantDialogComponent";
+import { getTenants, toggle, update } from "@/modules/tenants/tenantsService";
+import { setTenants, updateTenant } from "@/store/tenantsSlice";
+import { Tenant } from "@/types/tenant";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { Card, Flex, Switch, Table, TextField } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTenants, toggle, update } from "@/modules/tenants/tenantsService";
-import { Tenant } from "@/types/tenant";
 import { toast } from "react-toastify";
-import { Flex, Card, Table, Switch, TextField } from "@radix-ui/themes";
-import CreateTenantDialogComponent from "@/components/institutions/CreateTenantDialogComponent";
-import { setTenants, updateTenant } from "@/store/tenantsSlice";
-import DashboardLayout from "@/components/DashboardComponent";
-import TenantDialogComponent from "@/components/institutions/tenantDialogComponent/TenantDialogComponent";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import "./tenants.css";
 
 export default function DashboardTenants() {
@@ -160,11 +160,11 @@ export default function DashboardTenants() {
               ) : (
                 filteredTenants.map((tenant) => (
                   <Table.Row key={tenant.id}>
-                    <Table.Cell>{tenant.id}</Table.Cell>
-                    <Table.Cell>{tenant.name}</Table.Cell>
-                    <Table.Cell>{tenant.email}</Table.Cell>
-                    <Table.Cell>{tenant.address}</Table.Cell>
-                    <Table.Cell>
+                    <Table.Cell className="cell">{tenant.id}</Table.Cell>
+                    <Table.Cell className="cell">{tenant.name}</Table.Cell>
+                    <Table.Cell className="cell">{tenant.email}</Table.Cell>
+                    <Table.Cell className="cell">{tenant.address}</Table.Cell>
+                    <Table.Cell className="cell">
                       <Switch
                         checked={tenant.active}
                         onClick={() => handleToggleTenant(tenant.id)}

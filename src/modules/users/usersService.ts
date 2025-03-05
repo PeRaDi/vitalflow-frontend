@@ -6,8 +6,6 @@ export async function toggleUser(userId: number): Promise<any> {
       withCredentials: true,
     });
 
-    console.log(response);
-
     if (response.status != 200)
       return { success: false, message: response.data.message };
 
@@ -17,10 +15,12 @@ export async function toggleUser(userId: number): Promise<any> {
       active: response.data.active,
     };
   } catch (error) {
-    console.error(error);
+    const errorMessage =
+      (error as any).response?.data?.errorMessage ||
+      "An unknown error occurred.";
     return {
       success: false,
-      message: "An unknown error occurred toggling user.",
+      message: errorMessage,
     };
   }
 }

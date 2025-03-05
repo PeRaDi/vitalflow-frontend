@@ -1,4 +1,7 @@
-import { getInvitedUsers, inviteUser } from "@/modules/tenants/tenantsService";
+import {
+  getInvitedUsers,
+  inviteUser,
+} from "@/modules/users/invitedUsersService";
 import { Tenant } from "@/types/tenant";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
 import {
@@ -37,14 +40,11 @@ export default function InvitedUsersTabComponent({
       toast("An error occurred retrieving invited users.", {
         type: "error",
       });
-      console.error(response.message);
       return;
     }
 
     setInvitedUsers(
-      response.invitedUsers.sort(
-        (a: { id: number }, b: { id: number }) => a.id - b.id
-      )
+      response.users.sort((a: { id: number }, b: { id: number }) => a.id - b.id)
     );
     setLoading(false);
   };
@@ -55,7 +55,6 @@ export default function InvitedUsersTabComponent({
 
     const response = await inviteUser(tenant.id, email, roleId);
 
-    console.log(response);
     if (!response.success) {
       toast("An error occurred inviting user.", { type: "error" });
       console.error(response.message);
@@ -77,22 +76,28 @@ export default function InvitedUsersTabComponent({
       <div style={{ maxHeight: "150px", overflowY: "auto" }}>
         <Table.Root>
           <Table.Body>
-            {invitedUsers.map((user) => (
-              <Table.Row key={user.id}>
-                <Table.Cell>{user.id}</Table.Cell>
-                <Table.Cell>{user.email}</Table.Cell>
-                <Table.Cell>
-                  <Badge
-                    color={user.role.label == "manager" ? "yellow" : "green"}
-                  >
-                    {user.role.displayName}
-                  </Badge>
-                </Table.Cell>
-                <Table.Cell>
-                  <Badge color="orange">Invited</Badge>
-                </Table.Cell>
+            {invitedUsers.length == 0 && (
+              <Table.Row>
+                <Table.Cell colSpan={6}>No invited users</Table.Cell>
               </Table.Row>
-            ))}
+            )}
+            {invitedUsers.length > 0 &&
+              invitedUsers.map((user) => (
+                <Table.Row key={user.id}>
+                  <Table.Cell>{user.id}</Table.Cell>
+                  <Table.Cell>{user.email}</Table.Cell>
+                  <Table.Cell>
+                    <Badge
+                      color={user.role.label == "manager" ? "yellow" : "green"}
+                    >
+                      {user.role.displayName}
+                    </Badge>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Badge color="orange">Invited</Badge>
+                  </Table.Cell>
+                </Table.Row>
+              ))}
           </Table.Body>
         </Table.Root>
       </div>
