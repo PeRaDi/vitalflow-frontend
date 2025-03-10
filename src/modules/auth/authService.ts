@@ -1,8 +1,9 @@
-import api from "../api";
-import { SigninDto } from "./dtos/signin.dto";
-import { Tenant } from "@/types/tenant";
 import { Role } from "@/types/role";
+import { Tenant } from "@/types/tenant";
 import { User } from "@/types/user";
+import api from "../api";
+import { ChangePasswordDto } from "./dtos/changePassword.dto";
+import { SigninDto } from "./dtos/signin.dto";
 import { SignupDto } from "./dtos/signup.dto";
 
 export async function handleSignin(signinDto: SigninDto): Promise<any> {
@@ -10,9 +11,6 @@ export async function handleSignin(signinDto: SigninDto): Promise<any> {
     const responseSignin = await api.post("/auth/signin", signinDto, {
       withCredentials: true,
     });
-
-    if (responseSignin.status != 200)
-      return { success: false, message: responseSignin.data.message };
 
     const responseInfo = await api.get("/users/info", {
       withCredentials: true,
@@ -39,9 +37,19 @@ export async function handleSignin(signinDto: SigninDto): Promise<any> {
       message: "Successfully signed in with: " + user.name,
       user,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.errorMessage,
+      };
+    }
+
     console.error(error);
-    return { success: false, message: "An unknown error occurred signing in." };
+    return {
+      success: false,
+      message: "An unknown error occurred signing in.",
+    };
   }
 }
 
@@ -88,6 +96,82 @@ export async function handleSignout(): Promise<any> {
     return {
       success: false,
       message: "An unknown error occurred signing out.",
+    };
+  }
+}
+
+export async function handleForgotPassword(
+  emailOrUsername: string
+): Promise<any> {
+  try {
+    const response = await api.post("/auth/forgot-password", {
+      emailOrUsername,
+    });
+
+    if (response.status != 200)
+      return { success: false, message: response.data.message };
+
+    return { success: true, message: "Successfully sent email." };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred sending email.",
+    };
+  }
+}
+
+export async function handleResetPassword(
+  emailOrUsername: string,
+  forgotPasswordToken: string,
+  password: string,
+  confirmPassword: string
+): Promise<any> {
+  try {
+    const response = await api.post("/auth/reset-password", {
+      emailOrUsername,
+      forgotPasswordToken,
+      password,
+      confirmPassword,
+    });
+
+    if (response.status != 200)
+      return { success: false, message: response.data.message };
+
+    return { success: true, message: "Successfully reset password." };
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred resetting password.",
+    };
+  }
+}
+
+export async function handleChangePassword(
+  changePasswordDto: ChangePasswordDto
+): Promise<any> {
+  try {
+    const response = await api.post(
+      "/auth/change-password",
+      changePasswordDto,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return { success: true, message: response.data.message };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.errorMessage,
+      };
+    }
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred changing password.",
     };
   }
 }

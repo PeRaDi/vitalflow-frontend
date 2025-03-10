@@ -34,8 +34,6 @@ export default function InvitedUsersTabComponent({
     setLoading(true);
     const response = await getInvitedUsers(tenantId);
 
-    console.log(response);
-
     if (!response.success) {
       toast("An error occurred retrieving invited users.", {
         type: "error",

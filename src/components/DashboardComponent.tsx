@@ -2,26 +2,27 @@
 
 import withAuth from "@/components/hoc/withAuth";
 import { useAuth } from "@/context/AuthContext";
+import { handleSignout } from "@/modules/auth/authService";
 import {
-  Avatar,
-  Box,
-  Card,
-  Flex,
-  IconButton,
-  Separator,
-  Text,
-  DropdownMenu,
-} from "@radix-ui/themes";
-import { Fragment } from "react";
-import {
+  ArchiveIcon,
   BoxModelIcon,
   GearIcon,
   HomeIcon,
   PersonIcon,
   TriangleUpIcon,
 } from "@radix-ui/react-icons";
+import {
+  Avatar,
+  Box,
+  Card,
+  DropdownMenu,
+  Flex,
+  IconButton,
+  Separator,
+  Text,
+} from "@radix-ui/themes";
 import { useRouter } from "next/router";
-import { handleSignout } from "@/modules/auth/authService";
+import { Fragment } from "react";
 
 function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useAuth();
@@ -32,14 +33,32 @@ function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
       name: "Dashboard",
       href: "/dashboard/home",
       icon: HomeIcon,
+      role: ["ADMIN", "MANAGER", "USER"],
     },
-    { name: "Users", href: "/dashboard/users", icon: PersonIcon },
+    {
+      name: "Products",
+      href: "/dashboard/products",
+      icon: ArchiveIcon,
+      role: ["MANAGER", "USER"],
+    },
+    {
+      name: "Users",
+      href: "/dashboard/users",
+      icon: PersonIcon,
+      role: ["ADMIN", "MANAGER"],
+    },
     {
       name: "Institutions",
       href: "/dashboard/institutions",
       icon: BoxModelIcon,
+      role: ["ADMIN"],
     },
-    { name: "Settings", href: "/dashboard/settings", icon: GearIcon },
+    {
+      name: "Settings",
+      href: "/dashboard/settings",
+      icon: GearIcon,
+      role: ["ADMIN", "MANAGER", "USER"],
+    },
   ];
 
   const signOutAction = async () => {
@@ -60,7 +79,7 @@ function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
                 <Avatar size="3" radius="full" fallback="V" />
                 <Box>
                   <Text as="div" size="2" weight="bold">
-                    Admin Dashboard
+                    {user.role.displayName} Dashboard
                   </Text>
                   <Text as="div" size="2" color="gray">
                     vitalFlow
@@ -71,28 +90,31 @@ function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
           </Box>
           <Box width="100%" height="85vh">
             <Fragment>
-              {items.map((item, index) => (
-                <Flex width="100%" direction={"column"} key={index}>
-                  <Card
-                    onClick={() => {
-                      router.push(item.href);
-                    }}
-                    size="2"
-                    variant="ghost"
-                    style={{
-                      cursor: "pointer",
-                      marginTop: "0vw",
-                    }}
-                  >
-                    <Flex align="center" width="100%">
-                      <IconButton>{item.icon && <item.icon />}</IconButton>
-                      <Text as="div" style={{ marginLeft: "0.5vw" }}>
-                        {item.name}
-                      </Text>
-                    </Flex>
-                  </Card>
-                </Flex>
-              ))}
+              {items.map((item, index) => {
+                if (!item.role.includes(user.role.label)) return null;
+                return (
+                  <Flex width="100%" direction={"column"} key={index}>
+                    <Card
+                      onClick={() => {
+                        router.push(item.href);
+                      }}
+                      size="2"
+                      variant="ghost"
+                      style={{
+                        cursor: "pointer",
+                        marginTop: "0vw",
+                      }}
+                    >
+                      <Flex align="center" width="100%">
+                        <IconButton>{item.icon && <item.icon />}</IconButton>
+                        <Text as="div" style={{ marginLeft: "0.5vw" }}>
+                          {item.name}
+                        </Text>
+                      </Flex>
+                    </Card>
+                  </Flex>
+                );
+              })}
             </Fragment>
           </Box>
           <Box width="100%" height="7vh">

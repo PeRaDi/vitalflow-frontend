@@ -1,6 +1,6 @@
 import DashboardLayout from "@/components/DashboardComponent";
 
-export default function DashboardHome() {
+export default function DashboardIndex() {
   return (
     <DashboardLayout>
       <h1>Dashboard - Home</h1>

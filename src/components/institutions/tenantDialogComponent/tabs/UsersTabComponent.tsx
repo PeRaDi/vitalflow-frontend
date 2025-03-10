@@ -1,4 +1,4 @@
-import { getUsers } from "@/modules/tenants/tenantsService";
+import { getTenantUsers } from "@/modules/tenants/tenantsService";
 import { toggleUser } from "@/modules/users/usersService";
 import { Tenant } from "@/types/tenant";
 import { User } from "@/types/user";
@@ -16,7 +16,7 @@ export default function UsersTabComponent({ tenant }: UsersTabComponentProps) {
 
   const loadUsers = async (tenantId: number) => {
     setLoading(true);
-    const response = await getUsers(tenantId);
+    const response = await getTenantUsers(tenantId);
 
     if (!response.success) {
       toast("An error occurred retrieving institution users.", {

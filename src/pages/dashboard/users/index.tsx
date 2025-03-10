@@ -1,5 +1,7 @@
 import DashboardLayout from "@/components/DashboardComponent";
 import InviteUserDialogComponent from "@/components/users/InviteUserDialogComponent";
+import { useAuth } from "@/context/AuthContext";
+import { getTenantUsers } from "@/modules/tenants/tenantsService";
 import { getInvitedUsers } from "@/modules/users/invitedUsersService";
 import { getUsers, toggleUser } from "@/modules/users/usersService";
 import { setInvitedUsers } from "@/store/invitedUsersSlice";
@@ -13,10 +15,13 @@ import { toast } from "react-toastify";
 import "./users.css";
 
 export default function DashboardUsers() {
+  const { user } = useAuth();
+
   const dispatch = useDispatch();
   const users = useSelector((state: { users: { users: User[] } }) => {
     return state.users.users;
   });
+
   const invitedUsers = useSelector(
     (state: { invitedUsers: { invitedUsers: User[] } }) => {
       return state.invitedUsers.invitedUsers;
@@ -27,9 +32,14 @@ export default function DashboardUsers() {
 
   const loadUsers = async () => {
     setLoading(true);
-    const response = await getUsers();
+    let response;
 
-    if (!response.success) {
+    if (user.role.label === "ADMIN") response = await getUsers();
+
+    if (user.role.label === "MANAGER")
+      response = await getTenantUsers(user.tenant.id);
+
+    if (!response || !response.success) {
       toast("An error occurred retrieving users.", { type: "error" });
       return;
     }
@@ -40,9 +50,14 @@ export default function DashboardUsers() {
 
   const loadInvitedUsers = async () => {
     setLoading(true);
-    const response = await getInvitedUsers();
+    let response;
 
-    if (!response.success) {
+    if (user.role.label === "ADMIN") response = await getInvitedUsers();
+
+    if (user.role.label === "MANAGER")
+      response = await getInvitedUsers(user.tenant.id);
+
+    if (!response || !response.success) {
       toast("An error occurred retrieving invited users.", { type: "error" });
       return;
     }

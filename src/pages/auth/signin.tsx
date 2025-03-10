@@ -99,7 +99,7 @@ export default function SigninPage() {
                 </TextField.Slot>
               </TextField.Root>
               <Text size="1">
-                <a href="/forgotPassword">Forgot password?</a>
+                <a href="/auth/forgot-password">Forgot password?</a>
               </Text>
               <Button
                 type="submit"

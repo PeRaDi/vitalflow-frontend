@@ -5,10 +5,17 @@ import { handleVerifyToken } from "@/modules/auth/authService";
 import { Box, Button, Card, Flex, Heading, Separator } from "@radix-ui/themes";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function Home() {
   const { user, signOut } = useAuth();
   const router = useRouter();
+
+  if (window.localStorage.getItem("auth-status") === "signed-out") {
+    signOut();
+    window.localStorage.removeItem("auth-status");
+    toast.error("You have been signed out.");
+  }
 
   useEffect(() => {
     const verifyToken = async () => {

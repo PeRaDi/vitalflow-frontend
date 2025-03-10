@@ -129,7 +129,7 @@ export async function update(tenant: Tenant): Promise<any> {
   }
 }
 
-export async function getUsers(tenantId: number): Promise<any> {
+export async function getTenantUsers(tenantId: number): Promise<any> {
   try {
     const response = await api.get(`/tenants/${tenantId}/users`, {
       withCredentials: true,

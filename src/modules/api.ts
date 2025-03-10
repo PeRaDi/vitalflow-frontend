@@ -12,7 +12,19 @@ api.interceptors.response.use(
     }
     return response;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    if (error.response) {
+      if (error.response.request.withCredentials) {
+        if (error.response.status === 401) {
+          window.location.href = "/home";
+          window.localStorage["auth-status"] = "signed-out";
+          return;
+        }
+      }
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default api;

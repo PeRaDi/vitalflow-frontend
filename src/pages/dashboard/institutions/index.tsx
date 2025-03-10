@@ -95,7 +95,6 @@ export default function DashboardTenants() {
         updateTenant({ tenantId, field: "active", value: response.active })
       );
     }
-    console.log(typeof response.active);
     toast(
       "Successfully " +
         (response.active ? "activated" : "deactivated") +
