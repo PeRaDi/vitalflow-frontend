@@ -22,14 +22,14 @@ export default function DashboardTenants() {
   const loadTenants = async () => {
     setLoading(true);
     const response = await getTenants();
+    const data = response.data;
 
     if (!response.success) {
-      toast("An error occurred retrieving institutions.", { type: "error" });
-      console.error(response.message);
+      toast(response.message, { type: "error" });
       return;
     }
 
-    dispatch(setTenants(response.tenants));
+    dispatch(setTenants(data));
     setLoading(false);
   };
 
@@ -72,32 +72,25 @@ export default function DashboardTenants() {
       return;
     }
 
-    dispatchTenantFullUpdate(tenant);
-
-    toast(
-      "Successfully " +
-        (response.active ? "activated" : "deactivated") +
-        " institution.",
-      { type: "success" }
-    );
+    dispatchTenantFullUpdate(response.data);
+    toast(response.message, { type: "success" });
   };
 
-  const handleToggleTenant = async (tenantId: number) => {
+  const handleToggleTenant = async (tenant: Tenant) => {
+    const tenantId = tenant.id;
     const response = await toggle(tenantId);
     if (!response.success) {
-      toast("An error occurred toggling institution.", { type: "error" });
-      console.error(response.message);
+      toast(response.message, { type: "error" });
       return;
     }
-    const tenant = tenants.find((t) => t.id === tenantId);
-    if (tenant) {
-      dispatch(
-        updateTenant({ tenantId, field: "active", value: response.active })
-      );
-    }
+
+    dispatch(
+      updateTenant({ tenantId, field: "active", value: response.data.active })
+    );
+
     toast(
       "Successfully " +
-        (response.active ? "activated" : "deactivated") +
+        (response.data.active ? "activated" : "deactivated") +
         " institution.",
       { type: "success" }
     );
@@ -166,12 +159,12 @@ export default function DashboardTenants() {
                     <Table.Cell className="cell">
                       <Switch
                         checked={tenant.active}
-                        onClick={() => handleToggleTenant(tenant.id)}
+                        onClick={() => handleToggleTenant(tenant)}
                       />
                     </Table.Cell>
                     <Table.Cell>
                       <TenantDialogComponent
-                        tenant={tenant}
+                        tenantId={tenant.id}
                         updateTenant={handleUpdateTenant}
                       />
                     </Table.Cell>

@@ -2,7 +2,7 @@ import { getTenantUsers } from "@/modules/tenants/tenantsService";
 import { toggleUser } from "@/modules/users/usersService";
 import { Tenant } from "@/types/tenant";
 import { User } from "@/types/user";
-import { Badge, Switch, Table } from "@radix-ui/themes";
+import { Badge, Flex, Spinner, Switch, Table } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -26,20 +26,23 @@ export default function UsersTabComponent({ tenant }: UsersTabComponentProps) {
       return;
     }
 
-    setUsers(response.users);
+    setUsers(response.data);
     setLoading(false);
   };
 
   const handleToggleUser = async (userId: number) => {
     const response = await toggleUser(userId);
-
     if (!response.success) {
       toast(response.message, { type: "error" });
-      console.error(response.message);
       return;
     }
 
-    toast("User toggled successfully.", { type: "success" });
+    toast(
+      "Successfully " +
+        (response.data.active ? "activated" : "deactivated") +
+        " user.",
+      { type: "success" }
+    );
     loadUsers(tenant.id);
   };
 
@@ -47,7 +50,11 @@ export default function UsersTabComponent({ tenant }: UsersTabComponentProps) {
     loadUsers(tenant.id);
   }, []);
 
-  return users.length === 0 ? (
+  return loading ? (
+    <Flex>
+      <Spinner loading={loading} />
+    </Flex>
+  ) : users.length === 0 ? (
     <Table.Row>
       <Table.Cell colSpan={6}>No users found.</Table.Cell>
     </Table.Row>

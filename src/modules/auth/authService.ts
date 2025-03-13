@@ -1,12 +1,15 @@
+import { Response } from "@/types/response";
 import { Role } from "@/types/role";
 import { Tenant } from "@/types/tenant";
 import { User } from "@/types/user";
 import api from "../api";
 import { ChangePasswordDto } from "./dtos/changePassword.dto";
+import { ForgotPasswordDto } from "./dtos/forgotPassword.dto";
+import { ResetPasswordDto } from "./dtos/resetPassword.dto";
 import { SigninDto } from "./dtos/signin.dto";
 import { SignupDto } from "./dtos/signup.dto";
 
-export async function handleSignin(signinDto: SigninDto): Promise<any> {
+export async function handleSignin(signinDto: SigninDto): Promise<Response> {
   try {
     const responseSignin = await api.post("/auth/signin", signinDto, {
       withCredentials: true,
@@ -17,140 +20,195 @@ export async function handleSignin(signinDto: SigninDto): Promise<any> {
     });
 
     if (responseInfo.status != 200)
-      return { success: false, message: responseInfo.data.message };
+      return {
+        success: false,
+        message: responseInfo.data.message,
+        status: responseInfo.status,
+      };
 
-    const tenant: Tenant = responseInfo.data.tenant;
-    const role: Role = responseInfo.data.role;
+    const { data } = responseInfo.data;
+
+    const tenant: Tenant = data.tenant;
+    const role: Role = data.role;
     const user: User = {
-      id: responseInfo.data.id,
-      name: responseInfo.data.name,
-      email: responseInfo.data.email,
-      username: responseInfo.data.username,
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      username: data.username,
       tenant,
       role,
-      createdAt: responseInfo.data.createdAt,
-      updatedAt: responseInfo.data.updatedAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+      active: data.active,
     };
 
     return {
-      success: true,
-      message: "Successfully signed in with: " + user.name,
-      user,
+      success: responseInfo.status == 200,
+      message: responseInfo.data.message,
+      data: user,
+      status: responseSignin.status,
     };
   } catch (error: any) {
     if (error.response) {
       return {
         success: false,
-        message: error.response.data.errorMessage,
+        message: error.response.data.message,
+        status: error.response.status,
       };
     }
-
     console.error(error);
     return {
       success: false,
       message: "An unknown error occurred signing in.",
+      status: 500,
     };
   }
 }
 
-export async function handleVerifyToken(): Promise<any> {
+export async function handleVerifyToken(): Promise<Response> {
   try {
     const response = await api.get("/users/info", { withCredentials: true });
 
     if (response.status != 200)
-      return { success: false, message: "Invalid or expired token." };
+      return {
+        success: false,
+        message: response.data.message,
+        status: response.status,
+      };
 
-    return { success: true, message: "Token verified." };
-  } catch (error) {
+    return {
+      success: true,
+      message: "Token verified.",
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
     return {
       success: false,
       message: "An unknown error occurred verifying token.",
+      status: 500,
     };
   }
 }
 
-export async function handleSignup(signupDto: SignupDto): Promise<any> {
+export async function handleSignup(signupDto: SignupDto): Promise<Response> {
   try {
     const response = await api.post("/auth/signup", signupDto);
 
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
-
-    return { success: true, message: "Successfully signed up." };
-  } catch (error) {
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
-    return { success: false, message: "An unknown error occurred signing up." };
+    return {
+      success: false,
+      message: "An unknown error occurred signing up.",
+      status: 500,
+    };
   }
 }
 
-export async function handleSignout(): Promise<any> {
+export async function handleSignout(): Promise<Response> {
   try {
     const response = await api.post("/auth/signout", { withCredentials: true });
 
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
-
-    return { success: true, message: "Successfully signed out." };
-  } catch (error) {
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
       message: "An unknown error occurred signing out.",
+      status: 500,
     };
   }
 }
 
 export async function handleForgotPassword(
-  emailOrUsername: string
+  forgotPasswordDto: ForgotPasswordDto
 ): Promise<any> {
   try {
-    const response = await api.post("/auth/forgot-password", {
-      emailOrUsername,
-    });
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
-
-    return { success: true, message: "Successfully sent email." };
-  } catch (error) {
+    const response = await api.post("/auth/forgot-password", forgotPasswordDto);
+    console.log(response);
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred sending email.",
+      message: "An unknown error occurred sending the password reset code.",
+      status: 500,
     };
   }
 }
 
 export async function handleResetPassword(
-  emailOrUsername: string,
-  forgotPasswordToken: string,
-  password: string,
-  confirmPassword: string
-): Promise<any> {
+  resetPasswordDto: ResetPasswordDto
+): Promise<Response> {
   try {
-    const response = await api.post("/auth/reset-password", {
-      emailOrUsername,
-      forgotPasswordToken,
-      password,
-      confirmPassword,
-    });
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
-
-    return { success: true, message: "Successfully reset password." };
-  } catch (error) {
+    const response = await api.post("/auth/reset-password", resetPasswordDto);
+    console.log(response.data.message);
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred resetting password.",
+      message: "An unknown error resetting the password.",
+      status: 500,
     };
   }
 }
 
 export async function handleChangePassword(
   changePasswordDto: ChangePasswordDto
-): Promise<any> {
+): Promise<Response> {
   try {
     const response = await api.post(
       "/auth/change-password",
@@ -160,18 +218,24 @@ export async function handleChangePassword(
       }
     );
 
-    return { success: true, message: response.data.message };
+    return {
+      success: true,
+      message: response.data.message,
+      status: response.status,
+    };
   } catch (error: any) {
     if (error.response) {
       return {
         success: false,
-        message: error.response.data.errorMessage,
+        message: error.response.data.message,
+        status: error.response.status,
       };
     }
     console.error(error);
     return {
       success: false,
       message: "An unknown error occurred changing password.",
+      status: 500,
     };
   }
 }

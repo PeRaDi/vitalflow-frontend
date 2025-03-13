@@ -1,46 +1,60 @@
+import { Response } from "@/types/response";
 import api from "../api";
 
-export async function toggleUser(userId: number): Promise<any> {
+export async function toggleUser(userId: number): Promise<Response> {
   try {
     const response = await api.patch(`/users/${userId}/toggle`, {
       withCredentials: true,
     });
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
+    const { data } = response.data;
 
     return {
-      success: true,
-      message: "Successfully toggled user.",
-      active: response.data.active,
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
     };
-  } catch (error) {
-    const errorMessage =
-      (error as any).response?.data?.errorMessage ||
-      "An unknown error occurred.";
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
     return {
       success: false,
-      message: errorMessage,
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }
 
-export async function getUsers(): Promise<any> {
+export async function getUsers(): Promise<Response> {
   try {
     const response = await api.get("/users", { withCredentials: true });
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
+    const { data } = response.data;
 
     return {
-      success: true,
-      message: "Successfully retrieved users.",
-      users: response.data,
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred retrieving users.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }

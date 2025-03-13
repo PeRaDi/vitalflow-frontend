@@ -1,6 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
 import { handleSignup, handleVerifyToken } from "@/modules/auth/authService";
-import { SignupDto } from "@/modules/auth/dtos/signup.dto";
 import {
   Box,
   Button,
@@ -54,21 +53,18 @@ export default function SignupPage() {
       return toast("Passwords do not match.", { type: "error" });
     }
 
-    const signupDto: SignupDto = {
+    const { success, message } = await handleSignup({
       email,
       name,
       username,
       password,
       confirmPassword,
       signupToken,
-    };
-
-    const { success, message } = await handleSignup(signupDto);
+    });
 
     setIsPending(false);
 
-    const toastType = success ? "success" : "error";
-    toast(message, { type: toastType });
+    toast(message, { type: success ? "success" : "error" });
 
     if (success) router.push("/auth/signin");
   };

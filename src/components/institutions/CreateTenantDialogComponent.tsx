@@ -34,13 +34,15 @@ export default function CreateTenantDialogComponent({
 
     try {
       const tenant: CreateTenantDto = { name, email, address };
-      const createResponse = await create(tenant);
+      const response = await create(tenant);
 
-      if (!createResponse.success) {
+      if (!response.success) {
         toast("An error occurred creating the institution.", { type: "error" });
         setOpen(false);
         return;
       }
+
+      const data = response.data;
 
       if (contacts.length === 0) {
         toast("Institution created successfully.", { type: "success" });
@@ -56,19 +58,19 @@ export default function CreateTenantDialogComponent({
       };
 
       const addContactsResponse = await addContacts(
-        createResponse.tenant.id,
+        data.tenant.id,
         tenantsContacts
       );
 
       if (!addContactsResponse.success) {
-        toast("An error occured adding contacts to the institution.", {
+        toast(addContactsResponse.message, {
           type: "error",
         });
         setOpen(false);
         return;
       }
 
-      toast("Institution created successfully.", { type: "success" });
+      toast(addContactsResponse.message, { type: "success" });
       reloadTenants();
       setOpen(false);
     } catch (error) {

@@ -10,6 +10,7 @@ import {
   Button,
   Flex,
   Select,
+  Spinner,
   Table,
   Text,
   TextField,
@@ -35,14 +36,14 @@ export default function InvitedUsersTabComponent({
     const response = await getInvitedUsers(tenantId);
 
     if (!response.success) {
-      toast("An error occurred retrieving invited users.", {
+      toast(response.message, {
         type: "error",
       });
       return;
     }
 
     setInvitedUsers(
-      response.users.sort((a: { id: number }, b: { id: number }) => a.id - b.id)
+      response.data.sort((a: { id: number }, b: { id: number }) => a.id - b.id)
     );
     setLoading(false);
   };
@@ -54,12 +55,11 @@ export default function InvitedUsersTabComponent({
     const response = await inviteUser(tenant.id, email, roleId);
 
     if (!response.success) {
-      toast("An error occurred inviting user.", { type: "error" });
-      console.error(response.message);
+      toast(response.message, { type: "error" });
       return;
     }
 
-    toast("User invited successfully.", { type: "success" });
+    toast(response.message, { type: "success" });
     setEmail("");
     setRole("user");
     loadInvitedUsers(tenant.id);
@@ -69,7 +69,11 @@ export default function InvitedUsersTabComponent({
     loadInvitedUsers(tenant.id);
   }, []);
 
-  return (
+  return loading ? (
+    <Flex>
+      <Spinner loading={loading} />
+    </Flex>
+  ) : (
     <Flex direction="column" justify={"between"} style={{ height: "100%" }}>
       <div style={{ maxHeight: "150px", overflowY: "auto" }}>
         <Table.Root>

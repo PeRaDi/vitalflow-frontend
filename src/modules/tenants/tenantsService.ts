@@ -1,48 +1,63 @@
+import { Response } from "@/types/response";
 import { Tenant } from "@/types/tenant";
 import api from "../api";
 import AddContactsDto from "./dtos/contact.dto";
 import { CreateTenantDto } from "./dtos/tenant.dto";
 
-export async function getTenants(): Promise<any> {
+export async function getTenants(): Promise<Response> {
   try {
     const response = await api.get("/tenants/get", { withCredentials: true });
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
+    const { data } = response.data;
 
     return {
-      success: true,
-      message: "Successfully retrieved tenants.",
-      tenants: response.data,
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred retrieving tenants.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }
 
-export async function create(tenant: CreateTenantDto): Promise<any> {
+export async function create(tenant: CreateTenantDto): Promise<Response> {
   try {
     const response = await api.post("/tenants/create", tenant, {
       withCredentials: true,
     });
-
-    if (response.status != 201)
-      return { success: false, message: response.data.message };
+    const { data } = response.data;
 
     return {
-      success: true,
-      message: "Successfully created tenant.",
-      tenant: response.data,
+      success: response.status == 201,
+      message: response.data.message,
+      data,
+      status: response.status,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred creating tenant.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }
@@ -55,99 +70,118 @@ export async function addContacts(
     const response = await api.post(`/tenants/${tenantId}/contacts`, contacts, {
       withCredentials: true,
     });
-
-    if (response.status != 201)
-      return { success: false, message: response.data.message };
+    const { data } = response.data;
 
     return {
-      success: true,
-      message: "Successfully added contacts.",
-      contacts: response.data,
+      success: response.status == 201,
+      message: response.data.message,
+      data,
+      status: response.status,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred adding contacts.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }
 
-export async function toggle(tenantId: number): Promise<any> {
+export async function toggle(tenantId: number): Promise<Response> {
   try {
     const response = await api.patch(`/tenants/${tenantId}/toggle`, {
       withCredentials: true,
     });
+    const { data } = response.data;
 
-    if (response.status != 200)
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
       return {
         success: false,
-        message: response.data.message,
+        message: error.response.data.message,
+        status: error.response.status,
       };
-
-    return {
-      success: true,
-      message: "Successfully toggled tenant.",
-      active: response.data.active,
-    };
-  } catch (error) {
+    }
+    console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred toggling tenant.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }
 
-export async function update(tenant: Tenant): Promise<any> {
+export async function update(tenant: Tenant): Promise<Response> {
+  console.log(tenant);
   try {
     const updateResponse = await api.patch(`/tenants/${tenant.id}`, tenant, {
       withCredentials: true,
     });
-
-    if (updateResponse.status != 200)
-      return { success: false, message: updateResponse.data.message };
-
-    const toggleResponse = await toggle(tenant.id);
-
-    if (!toggleResponse.success)
-      return {
-        success: false,
-        message: "An error occurred toggling tenant.",
-      };
+    const { data } = updateResponse.data;
 
     return {
-      success: true,
-      message: "Successfully updated tenant.",
-      tenant: updateResponse.data,
+      success: updateResponse.status == 200,
+      message: updateResponse.data.message,
+      data,
+      status: updateResponse.status,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred updating tenant.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }
 
-export async function getTenantUsers(tenantId: number): Promise<any> {
+export async function getTenantUsers(tenantId: number): Promise<Response> {
   try {
     const response = await api.get(`/tenants/${tenantId}/users`, {
       withCredentials: true,
     });
-
-    if (response.status != 200)
-      return { success: false, message: response.data.message };
+    const { data } = response.data;
 
     return {
-      success: true,
-      message: "Successfully retrieved users.",
-      users: response.data,
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
     };
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
     console.error(error);
     return {
       success: false,
-      message: "An unknown error occurred retrieving users.",
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
     };
   }
 }

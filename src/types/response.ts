@@ -1,6 +1,6 @@
-export type Response<T> = {
-    data: T | null,
-    message: string,
-    status: number,
-    success: boolean
-}
+export type Response = {
+  data?: any;
+  message: string;
+  status: number;
+  success: boolean;
+};

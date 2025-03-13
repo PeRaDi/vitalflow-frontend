@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { handleSignin, handleVerifyToken } from "@/modules/auth/authService";
-import { SigninDto } from "@/modules/auth/dtos/signin.dto";
+import { User } from "@/types/user";
 import {
   Box,
   Button,
@@ -47,13 +47,12 @@ export default function SigninPage() {
     e.preventDefault();
     setIsPending(true);
 
-    const signInDto: SigninDto = {
+    const { success, message, data } = await handleSignin({
       emailOrUsername,
       password,
-    };
+    });
 
-    const { success, message, user } = await handleSignin(signInDto);
-
+    const user: User = data;
     setIsPending(false);
 
     if (success) {
@@ -61,8 +60,7 @@ export default function SigninPage() {
       router.push("/dashboard");
     }
 
-    const toastType = success ? "success" : "error";
-    toast(message, { type: toastType });
+    toast(message, { type: success ? "success" : "error" });
   };
 
   return (

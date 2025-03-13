@@ -10,27 +10,37 @@ import {
   Tabs,
 } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import InvitedUsersTabComponent from "./tabs/InvitedUsersTabComponent";
 import StatsTabComponent from "./tabs/StatsTabComponent";
 import UsersTabComponent from "./tabs/UsersTabComponent";
-import InvitedUsersTabComponent from "./tabs/InvitedUsersTabComponent";
 
 interface TenantDialogComponentProps {
-  tenant: Tenant;
+  tenantId: number;
   updateTenant: (tenant: Tenant) => void;
 }
 
 export default function TenantDialogComponent({
-  tenant,
+  tenantId,
   updateTenant,
 }: TenantDialogComponentProps) {
   const [open, setOpen] = useState(false);
   const [edited, setEdited] = useState(false);
   const [saveAlertDialogOpen, setSaveAlertDialogOpen] = useState(false);
+  const tenant = useSelector((state: { tenants: { tenants: Tenant[] } }) =>
+    state.tenants.tenants.find((tenant) => tenant.id === tenantId)
+  )!;
 
-  const [name, setName] = useState(tenant.name);
-  const [email, setEmail] = useState(tenant.email);
-  const [address, setAddress] = useState(tenant.address);
-  const [active, setActive] = useState(tenant.active);
+  const [localTenant, setLocalTenant] = useState(tenant);
+  const [localTenantName] = useState(tenant.name);
+  const [localTenantEmail] = useState(tenant.email);
+  const [localTenantAddress] = useState(tenant.address);
+
+  const handleOpen = () => {
+    console.log("Opening tenant dialog");
+    setLocalTenant(tenant);
+    setOpen(true);
+  };
 
   const handleClose = () => {
     if (edited) setSaveAlertDialogOpen(true);
@@ -38,28 +48,20 @@ export default function TenantDialogComponent({
   };
 
   const handleSave = () => {
-    updateTenant({
-      ...tenant,
-      name,
-      email,
-      address,
-      active,
-    });
+    console.log("Saving tenant", localTenant);
+    if (localTenant) {
+      updateTenant(localTenant);
+    }
     setOpen(false);
   };
 
   useEffect(() => {
-    if (
-      name !== tenant.name ||
-      email !== tenant.email ||
-      address !== tenant.address ||
-      active !== tenant.active
-    ) {
+    if (localTenant != tenant) {
       setEdited(true);
     } else {
       setEdited(false);
     }
-  }, [name, email, address, active]);
+  }, [localTenant]);
 
   return (
     <Flex>
@@ -89,104 +91,122 @@ export default function TenantDialogComponent({
       </AlertDialog.Root>
       <Dialog.Root open={open} onOpenChange={!open ? setOpen : handleClose}>
         <Dialog.Trigger>
-          <Button variant="soft">
+          <Button variant="soft" onClick={handleOpen}>
             <ArrowRightIcon height="16" width="16" />
           </Button>
         </Dialog.Trigger>
-        <Dialog.Content maxWidth="60vw">
-          <Flex>
-            <Flex
-              direction="column"
-              gap="2"
-              width="40%"
-              style={{ paddingTop: 20 }}
-            >
-              <Dialog.Title>
-                <div
-                  suppressContentEditableWarning={true}
-                  contentEditable={true}
-                  onInput={(e) => setName(e.currentTarget.textContent || "")}
-                >
-                  {tenant.name}
-                </div>
-              </Dialog.Title>
-              <Dialog.Description size="2" mb="4">
-                Click the text fields to edit the institution information.
-              </Dialog.Description>
-              <Flex gap="4">
-                <DataList.Root>
-                  <DataList.Item align="center">
-                    <DataList.Label minWidth="88px">Address</DataList.Label>
-                    <DataList.Value>
-                      <div
-                        suppressContentEditableWarning={true}
-                        contentEditable={true}
-                        onInput={(e) =>
-                          setAddress(e.currentTarget.textContent || "")
-                        }
-                      >
-                        {tenant.address}
-                      </div>
-                    </DataList.Value>
-                  </DataList.Item>
-                  <DataList.Item>
-                    <DataList.Label minWidth="88px">Email</DataList.Label>
-                    <DataList.Value>
-                      <div
-                        suppressContentEditableWarning={true}
-                        contentEditable={true}
-                        onInput={(e) =>
-                          setEmail(e.currentTarget.textContent || "")
-                        }
-                      >
-                        {tenant.email}
-                      </div>
-                    </DataList.Value>
-                  </DataList.Item>
-                  <DataList.Item>
-                    <DataList.Label minWidth="88px">Active</DataList.Label>
-                    <DataList.Value>
-                      <Switch
-                        checked={active}
-                        onCheckedChange={(checked) => setActive(checked)}
-                      ></Switch>
-                    </DataList.Value>
-                  </DataList.Item>
-                </DataList.Root>
+        {open && (
+          <Dialog.Content maxWidth="60vw">
+            <Flex>
+              <Flex
+                direction="column"
+                gap="2"
+                width="40%"
+                style={{ paddingTop: 20 }}
+              >
+                <Dialog.Title>
+                  <div
+                    suppressContentEditableWarning={true}
+                    contentEditable={true}
+                    onInput={(e) =>
+                      setLocalTenant({
+                        ...localTenant,
+                        name: e.currentTarget.textContent || "",
+                      })
+                    }
+                  >
+                    {localTenantName}
+                  </div>
+                </Dialog.Title>
+                <Dialog.Description size="2" mb="4">
+                  Click the text fields to edit the institution information.
+                </Dialog.Description>
+                <Flex gap="4">
+                  <DataList.Root>
+                    <DataList.Item align="center">
+                      <DataList.Label minWidth="88px">Address</DataList.Label>
+                      <DataList.Value>
+                        <div
+                          suppressContentEditableWarning={true}
+                          contentEditable={true}
+                          onInput={(e) =>
+                            setLocalTenant({
+                              ...localTenant,
+                              address: e.currentTarget.textContent || "",
+                            })
+                          }
+                        >
+                          {localTenantAddress}
+                        </div>
+                      </DataList.Value>
+                    </DataList.Item>
+                    <DataList.Item>
+                      <DataList.Label minWidth="88px">Email</DataList.Label>
+                      <DataList.Value>
+                        <div
+                          suppressContentEditableWarning={true}
+                          contentEditable={true}
+                          onInput={(e) =>
+                            setLocalTenant({
+                              ...localTenant,
+                              email: e.currentTarget.textContent || "",
+                            })
+                          }
+                        >
+                          {localTenantEmail}
+                        </div>
+                      </DataList.Value>
+                    </DataList.Item>
+                    <DataList.Item>
+                      <DataList.Label minWidth="88px">Active</DataList.Label>
+                      <DataList.Value>
+                        <Switch
+                          checked={localTenant.active}
+                          onCheckedChange={() => {
+                            setLocalTenant({
+                              ...localTenant,
+                              active: !localTenant.active,
+                            });
+                          }}
+                        />
+                      </DataList.Value>
+                    </DataList.Item>
+                  </DataList.Root>
+                </Flex>
               </Flex>
+              <Flex width="58%">
+                <Tabs.Root defaultValue="stats" style={{ width: "100%" }}>
+                  <Tabs.List>
+                    <Tabs.Trigger value="stats">Statistics</Tabs.Trigger>
+                    <Tabs.Trigger value="users">Users</Tabs.Trigger>
+                    <Tabs.Trigger value="invite-user">Invite User</Tabs.Trigger>
+                  </Tabs.List>
+
+                  <Tabs.Content
+                    value="stats"
+                    style={{ height: "220px", overflow: "hidden" }}
+                  >
+                    <StatsTabComponent tenant={tenant} />
+                  </Tabs.Content>
+
+                  <Tabs.Content
+                    value="users"
+                    style={{ height: "220px", overflow: "hidden" }}
+                  >
+                    <UsersTabComponent tenant={tenant} />
+                  </Tabs.Content>
+
+                  <Tabs.Content value="invite-user" style={{ height: "220px" }}>
+                    <InvitedUsersTabComponent tenant={tenant} />
+                  </Tabs.Content>
+                </Tabs.Root>
+              </Flex>
+              <Button variant="ghost" onClick={() => handleClose()}>
+                <Cross1Icon height="16" width="16" />
+              </Button>
             </Flex>
-            <Flex width="58%">
-              <Tabs.Root defaultValue="stats" style={{ width: "100%" }}>
-                <Tabs.List>
-                  <Tabs.Trigger value="stats">Statistics</Tabs.Trigger>
-                  <Tabs.Trigger value="users">Users</Tabs.Trigger>
-                  <Tabs.Trigger value="invite-user">Invite User</Tabs.Trigger>
-                </Tabs.List>
-
-                <Tabs.Content
-                  value="stats"
-                  style={{ height: "220px", overflow: "hidden" }}
-                >
-                  <StatsTabComponent tenant={tenant} />
-                </Tabs.Content>
-
-                <Tabs.Content
-                  value="users"
-                  style={{ height: "220px", overflow: "hidden" }}
-                >
-                  <UsersTabComponent tenant={tenant} />
-                </Tabs.Content>
-
-                <Tabs.Content value="invite-user" style={{ height: "220px" }}>
-                  <InvitedUsersTabComponent tenant={tenant} />
-                </Tabs.Content>
-              </Tabs.Root>
-            </Flex>
-            <Button variant="ghost" onClick={() => handleClose()}>
-              <Cross1Icon height="16" width="16" />
-            </Button>
-          </Flex>
-        </Dialog.Content>
+          </Dialog.Content>
+        )}
       </Dialog.Root>
     </Flex>
   );

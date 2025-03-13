@@ -47,19 +47,19 @@ export default function ForgotPasswordPage() {
         toast("Please enter a valid token", { type: "error" });
         return;
       }
-      const response = await handleResetPassword(
+      const response = await handleResetPassword({
         emailOrUsername,
-        token,
+        forgotPasswordToken: token,
         password,
-        confirmPassword
-      );
+        confirmPassword,
+      });
 
       if (!response.success) {
         toast(response.message, { type: "error" });
         return;
       }
 
-      toast("Password reset successfully", { type: "success" });
+      toast(response.message, { type: "success" });
       router.push("/auth/signin");
     } catch (error) {
       console.error(error);
@@ -78,7 +78,8 @@ export default function ForgotPasswordPage() {
         return;
       }
 
-      const response = await handleForgotPassword(emailOrUsername);
+      const response = await handleForgotPassword({ emailOrUsername });
+      console.log(response);
 
       if (!response.success) {
         setTokenState("none");
@@ -87,7 +88,7 @@ export default function ForgotPasswordPage() {
       }
 
       setTokenState("sent");
-      toast("Password reset token sent successfully", { type: "success" });
+      toast(response.message, { type: "success" });
     } catch (error) {
       console.error(error);
       toast("An unknown error occurred sending token", { type: "error" });

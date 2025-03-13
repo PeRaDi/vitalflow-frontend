@@ -23,6 +23,7 @@ import {
 } from "@radix-ui/themes";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
+import { toast } from "react-toastify";
 
 function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useAuth();
@@ -65,6 +66,7 @@ function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
     const response = await handleSignout();
     if (response.success) {
       await signOut();
+      toast.success(response.message);
       router.push("/home");
     }
   };
