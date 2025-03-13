@@ -126,7 +126,6 @@ export async function toggle(tenantId: number): Promise<Response> {
 }
 
 export async function update(tenant: Tenant): Promise<Response> {
-  console.log(tenant);
   try {
     const updateResponse = await api.patch(`/tenants/${tenant.id}`, tenant, {
       withCredentials: true,

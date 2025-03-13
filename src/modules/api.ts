@@ -10,14 +10,10 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response) {
-      if (error.response.request.withCredentials) {
-        if (error.response.status === 401) {
-          window.location.href = "/home";
-          window.localStorage["auth-status"] = "signed-out";
-          return;
-        }
-      }
+    if (error.response.data.message === "Invalid authentication token.") {
+      window.location.href = "/home";
+      window.localStorage["auth-status"] = "signed-out";
+      return;
     }
 
     return Promise.reject(error);

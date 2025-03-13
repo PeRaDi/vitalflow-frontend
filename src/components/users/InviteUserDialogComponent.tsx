@@ -32,7 +32,7 @@ export default function InviteUserDialogComponent({
         try {
           const response = await getTenants();
           if (response.success) {
-            setTenants(response.tenants);
+            setTenants(response.data);
           } else {
             toast("Failed to load tenants.", { type: "error" });
           }

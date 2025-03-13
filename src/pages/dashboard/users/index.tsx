@@ -44,7 +44,7 @@ export default function DashboardUsers() {
       return;
     }
 
-    dispatch(setUsers(response.users));
+    dispatch(setUsers(response.data));
     setLoading(false);
   };
 
@@ -62,13 +62,15 @@ export default function DashboardUsers() {
       return;
     }
 
-    dispatch(setInvitedUsers(response.users));
+    dispatch(setInvitedUsers(response.data));
     setLoading(false);
   };
 
   const handleToggleUser = async (userId: number) => {
     const response = await toggleUser(userId);
+    console.log(response);
     if (!response.success) {
+      console.error(response);
       toast(response.message, { type: "error" });
       return;
     }
@@ -76,12 +78,14 @@ export default function DashboardUsers() {
     const user = users.find((u) => u.id === userId);
 
     if (user) {
-      dispatch(updateUser({ userId, field: "active", value: response.active }));
+      dispatch(
+        updateUser({ userId, field: "active", value: response.data.active })
+      );
     }
 
     toast(
       "Successfully " +
-        (response.active ? "activated" : "deactivated") +
+        (response.data.active ? "activated" : "deactivated") +
         " user.",
       { type: "success" }
     );

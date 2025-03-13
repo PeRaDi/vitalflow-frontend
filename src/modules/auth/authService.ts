@@ -19,10 +19,10 @@ export async function handleSignin(signinDto: SigninDto): Promise<Response> {
       withCredentials: true,
     });
 
-    if (responseInfo.status != 200)
+    if (responseSignin.status != 200 && responseInfo.status != 200)
       return {
         success: false,
-        message: responseInfo.data.message,
+        message: responseSignin.data.message || responseInfo.data.message,
         status: responseInfo.status,
       };
 
@@ -53,10 +53,10 @@ export async function handleSignin(signinDto: SigninDto): Promise<Response> {
       return {
         success: false,
         message: error.response.data.message,
-        status: error.response.status,
+        status: error.status,
       };
     }
-    console.error(error);
+    //console.error(error);
     return {
       success: false,
       message: "An unknown error occurred signing in.",
