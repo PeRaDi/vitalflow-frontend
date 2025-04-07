@@ -53,7 +53,7 @@ export default function SignupPage() {
       return toast("Passwords do not match.", { type: "error" });
     }
 
-    const { success, message } = await handleSignup({
+    const response = await handleSignup({
       email,
       name,
       username,
@@ -64,9 +64,9 @@ export default function SignupPage() {
 
     setIsPending(false);
 
-    toast(message, { type: success ? "success" : "error" });
+    toast(response.message, { type: response.success ? "success" : "error" });
 
-    if (success) router.push("/auth/signin");
+    if (response.success) router.push("/auth/signin");
   };
 
   return (

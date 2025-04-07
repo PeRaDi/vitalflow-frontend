@@ -155,7 +155,6 @@ export async function handleForgotPassword(
 ): Promise<any> {
   try {
     const response = await api.post("/auth/forgot-password", forgotPasswordDto);
-    console.log(response);
     return {
       success: response.status == 200,
       message: response.data.message,
@@ -183,7 +182,6 @@ export async function handleResetPassword(
 ): Promise<Response> {
   try {
     const response = await api.post("/auth/reset-password", resetPasswordDto);
-    console.log(response.data.message);
     return {
       success: response.status == 200,
       message: response.data.message,

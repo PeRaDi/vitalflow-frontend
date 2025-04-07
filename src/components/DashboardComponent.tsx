@@ -140,7 +140,9 @@ function DashboardLayoutComponent({ children }: { children: React.ReactNode }) {
                     </IconButton>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content>
-                    <DropdownMenu.Item onSelect={() => router.push("/profile")}>
+                    <DropdownMenu.Item
+                      onSelect={() => router.push("/dashboard/profile")}
+                    >
                       Profile
                     </DropdownMenu.Item>
                     <Separator size="4" />

@@ -17,3 +17,7 @@
     width: 100%;
     table-layout: fixed;
 }
+
+.cell {
+    vertical-align: middle;
+}

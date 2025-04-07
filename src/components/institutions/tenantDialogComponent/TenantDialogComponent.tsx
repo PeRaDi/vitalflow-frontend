@@ -37,7 +37,6 @@ export default function TenantDialogComponent({
   const [localTenantAddress] = useState(tenant.address);
 
   const handleOpen = () => {
-    console.log("Opening tenant dialog");
     setLocalTenant(tenant);
     setOpen(true);
   };
@@ -48,7 +47,6 @@ export default function TenantDialogComponent({
   };
 
   const handleSave = () => {
-    console.log("Saving tenant", localTenant);
     if (localTenant) {
       updateTenant(localTenant);
     }

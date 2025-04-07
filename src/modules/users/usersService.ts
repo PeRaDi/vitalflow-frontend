@@ -58,3 +58,64 @@ export async function getUsers(): Promise<Response> {
     };
   }
 }
+
+export async function updateRole(
+  userId: number,
+  role: string
+): Promise<Response> {
+  try {
+    const response = await api.patch(`/users/${userId}/role/${role}`, {
+      withCredentials: true,
+    });
+    const { data } = response.data;
+
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
+    };
+  }
+}
+
+export async function updateUser(userId: number, body: {}): Promise<Response> {
+  try {
+    const response = await api.patch(`/users/${userId}`, body);
+    const { data } = response.data;
+
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred retreiving roles.",
+      status: 500,
+    };
+  }
+}

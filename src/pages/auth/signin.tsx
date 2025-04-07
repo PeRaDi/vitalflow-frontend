@@ -47,20 +47,20 @@ export default function SigninPage() {
     e.preventDefault();
     setIsPending(true);
 
-    const { success, message, data } = await handleSignin({
+    const response = await handleSignin({
       emailOrUsername,
       password,
     });
 
-    const user: User = data;
+    const user: User = response.data;
     setIsPending(false);
 
-    if (success) {
+    if (response.success) {
       await signIn(user);
       router.push("/dashboard");
     }
 
-    toast(message, { type: success ? "success" : "error" });
+    toast(response.message, { type: response.success ? "success" : "error" });
   };
 
   return (

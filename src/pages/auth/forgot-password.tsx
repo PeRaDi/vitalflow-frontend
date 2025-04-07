@@ -38,7 +38,6 @@ export default function ForgotPasswordPage() {
       }
 
       if (password !== confirmPassword) {
-        console.log(password, confirmPassword);
         toast("Passwords do not match", { type: "error" });
         return;
       }
@@ -54,12 +53,7 @@ export default function ForgotPasswordPage() {
         confirmPassword,
       });
 
-      if (!response.success) {
-        toast(response.message, { type: "error" });
-        return;
-      }
-
-      toast(response.message, { type: "success" });
+      toast(response.message, { type: response.success ? "success" : "error" });
       router.push("/auth/signin");
     } catch (error) {
       console.error(error);
@@ -79,7 +73,6 @@ export default function ForgotPasswordPage() {
       }
 
       const response = await handleForgotPassword({ emailOrUsername });
-      console.log(response);
 
       if (!response.success) {
         setTokenState("none");

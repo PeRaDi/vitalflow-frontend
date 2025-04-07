@@ -3,12 +3,21 @@ import InviteUserDialogComponent from "@/components/users/InviteUserDialogCompon
 import { useAuth } from "@/context/AuthContext";
 import { getTenantUsers } from "@/modules/tenants/tenantsService";
 import { getInvitedUsers } from "@/modules/users/invitedUsersService";
-import { getUsers, toggleUser } from "@/modules/users/usersService";
+import { getUsers, toggleUser, updateRole } from "@/modules/users/usersService";
 import { setInvitedUsers } from "@/store/invitedUsersSlice";
 import { setUsers, updateUser } from "@/store/usersSlice";
 import { User } from "@/types/user";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { Card, Flex, Switch, Table, Tabs, TextField } from "@radix-ui/themes";
+import {
+  Button,
+  Card,
+  DropdownMenu,
+  Flex,
+  Switch,
+  Table,
+  Tabs,
+  TextField,
+} from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -68,7 +77,6 @@ export default function DashboardUsers() {
 
   const handleToggleUser = async (userId: number) => {
     const response = await toggleUser(userId);
-    console.log(response);
     if (!response.success) {
       console.error(response);
       toast(response.message, { type: "error" });
@@ -89,6 +97,17 @@ export default function DashboardUsers() {
         " user.",
       { type: "success" }
     );
+  };
+
+  const handleRoleChange = async (userId: number, role: string) => {
+    const response = await updateRole(userId, role);
+    if (!response.success) {
+      console.error(response);
+      toast(response.message, { type: "error" });
+      return;
+    }
+    dispatch(updateUser({ userId, field: "role", value: response.data.role }));
+    toast("Successfully updated user role.", { type: "success" });
   };
 
   useEffect(() => {
@@ -155,7 +174,6 @@ export default function DashboardUsers() {
                       <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Role</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Active</Table.ColumnHeaderCell>
-                      <Table.ColumnHeaderCell></Table.ColumnHeaderCell>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body className="table-body">
@@ -170,21 +188,62 @@ export default function DashboardUsers() {
                     ) : (
                       filteredUsers.map((user) => (
                         <Table.Row key={user.id}>
-                          <Table.Cell>{user.id}</Table.Cell>
-                          <Table.Cell>{user.name}</Table.Cell>
-                          <Table.Cell>{user.email}</Table.Cell>
-                          <Table.Cell>{user.role.displayName}</Table.Cell>
-                          <Table.Cell>
+                          <Table.Cell className="cell">{user.id}</Table.Cell>
+                          <Table.Cell className="cell">{user.name}</Table.Cell>
+                          <Table.Cell className="cell">{user.email}</Table.Cell>
+                          <Table.Cell className="cell">
+                            <DropdownMenu.Root>
+                              <DropdownMenu.Trigger>
+                                <Button
+                                  variant="soft"
+                                  color={
+                                    user.role.label === "USER"
+                                      ? "green"
+                                      : user.role.label === "MANAGER"
+                                      ? "yellow"
+                                      : "red"
+                                  }
+                                >
+                                  {user.role.displayName}
+                                  <DropdownMenu.TriggerIcon />
+                                </Button>
+                              </DropdownMenu.Trigger>
+                              <DropdownMenu.Content>
+                                {user.role.label != "USER" && (
+                                  <DropdownMenu.Item
+                                    onClick={() =>
+                                      handleRoleChange(user.id, "USER")
+                                    }
+                                  >
+                                    User
+                                  </DropdownMenu.Item>
+                                )}
+                                {user.role.label != "MANAGER" && (
+                                  <DropdownMenu.Item
+                                    onClick={() =>
+                                      handleRoleChange(user.id, "MANAGER")
+                                    }
+                                  >
+                                    Manager
+                                  </DropdownMenu.Item>
+                                )}
+                                {user.role.label != "ADMIN" && (
+                                  <DropdownMenu.Item
+                                    onClick={() =>
+                                      handleRoleChange(user.id, "ADMIN")
+                                    }
+                                  >
+                                    Administrator
+                                  </DropdownMenu.Item>
+                                )}
+                              </DropdownMenu.Content>
+                            </DropdownMenu.Root>
+                          </Table.Cell>
+                          <Table.Cell className="cell">
                             <Switch
                               checked={user.active}
                               onClick={() => handleToggleUser(user.id)}
                             />
-                          </Table.Cell>
-                          <Table.Cell>
-                            {/* <UserDialogComponent
-                        tenant={user}
-                        updateTenant={handleUpdateUser}
-                      /> */}
                           </Table.Cell>
                         </Table.Row>
                       ))
