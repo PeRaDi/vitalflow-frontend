@@ -1,4 +1,4 @@
-import Response from "@/types/response";
+import { Response } from "@/types/response";
 
 export default interface SigninResponse extends Response {
   token: string;

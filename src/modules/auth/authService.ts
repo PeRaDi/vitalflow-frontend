@@ -1,7 +1,4 @@
 import { Response } from "@/types/response";
-import { Role } from "@/types/role";
-import { Tenant } from "@/types/tenant";
-import { User } from "@/types/user";
 import api from "../api";
 import { ChangePasswordDto } from "./dtos/changePassword.dto";
 import { ForgotPasswordDto } from "./dtos/forgotPassword.dto";
@@ -15,37 +12,9 @@ export async function handleSignin(signinDto: SigninDto): Promise<Response> {
       withCredentials: true,
     });
 
-    const responseInfo = await api.get("/users/info", {
-      withCredentials: true,
-    });
-
-    if (responseSignin.status != 200 && responseInfo.status != 200)
-      return {
-        success: false,
-        message: responseSignin.data.message || responseInfo.data.message,
-        status: responseInfo.status,
-      };
-
-    const { data } = responseInfo.data;
-
-    const tenant: Tenant = data.tenant;
-    const role: Role = data.role;
-    const user: User = {
-      id: data.id,
-      name: data.name,
-      email: data.email,
-      username: data.username,
-      tenant,
-      role,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-      active: data.active,
-    };
-
     return {
-      success: responseInfo.status == 200,
-      message: responseInfo.data.message,
-      data: user,
+      success: responseSignin.status == 200,
+      message: responseSignin.data.message,
       status: responseSignin.status,
     };
   } catch (error: any) {
@@ -103,7 +72,7 @@ export async function handleSignup(signupDto: SignupDto): Promise<Response> {
     const response = await api.post("/auth/signup", signupDto);
 
     return {
-      success: response.status == 200,
+      success: response.status == 201,
       message: response.data.message,
       status: response.status,
     };

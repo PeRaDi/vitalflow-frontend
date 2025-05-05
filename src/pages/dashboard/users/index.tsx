@@ -18,10 +18,9 @@ import {
   Tabs,
   TextField,
 } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import "./users.css";
 
 export default function DashboardUsers() {
   const { user } = useAuth();
@@ -167,7 +166,7 @@ export default function DashboardUsers() {
               </Card>
               <Card style={{ height: "89vh" }}>
                 <Table.Root style={{ height: "100%" }}>
-                  <Table.Header className="table-header">
+                  <Table.Header style={styles.tableHeader}>
                     <Table.Row>
                       <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
@@ -176,7 +175,7 @@ export default function DashboardUsers() {
                       <Table.ColumnHeaderCell>Active</Table.ColumnHeaderCell>
                     </Table.Row>
                   </Table.Header>
-                  <Table.Body className="table-body">
+                  <Table.Body style={styles.tableBody}>
                     {loading ? (
                       <Table.Row>
                         <Table.Cell colSpan={6}>Loading...</Table.Cell>
@@ -188,10 +187,14 @@ export default function DashboardUsers() {
                     ) : (
                       filteredUsers.map((user) => (
                         <Table.Row key={user.id}>
-                          <Table.Cell className="cell">{user.id}</Table.Cell>
-                          <Table.Cell className="cell">{user.name}</Table.Cell>
-                          <Table.Cell className="cell">{user.email}</Table.Cell>
-                          <Table.Cell className="cell">
+                          <Table.Cell style={styles.cell}>{user.id}</Table.Cell>
+                          <Table.Cell style={styles.cell}>
+                            {user.name}
+                          </Table.Cell>
+                          <Table.Cell style={styles.cell}>
+                            {user.email}
+                          </Table.Cell>
+                          <Table.Cell style={styles.cell}>
                             <DropdownMenu.Root>
                               <DropdownMenu.Trigger>
                                 <Button
@@ -239,7 +242,7 @@ export default function DashboardUsers() {
                               </DropdownMenu.Content>
                             </DropdownMenu.Root>
                           </Table.Cell>
-                          <Table.Cell className="cell">
+                          <Table.Cell style={styles.cell}>
                             <Switch
                               checked={user.active}
                               onClick={() => handleToggleUser(user.id)}
@@ -279,7 +282,7 @@ export default function DashboardUsers() {
               </Card>
               <Card style={{ height: "89vh" }}>
                 <Table.Root style={{ height: "100%" }}>
-                  <Table.Header className="table-header">
+                  <Table.Header style={styles.tableHeader}>
                     <Table.Row>
                       <Table.ColumnHeaderCell>ID</Table.ColumnHeaderCell>
                       <Table.ColumnHeaderCell>Email</Table.ColumnHeaderCell>
@@ -287,7 +290,7 @@ export default function DashboardUsers() {
                       <Table.ColumnHeaderCell>Role</Table.ColumnHeaderCell>
                     </Table.Row>
                   </Table.Header>
-                  <Table.Body className="table-body">
+                  <Table.Body style={styles.tableBody}>
                     {loading ? (
                       <Table.Row>
                         <Table.Cell colSpan={6}>Loading...</Table.Cell>
@@ -318,3 +321,22 @@ export default function DashboardUsers() {
     </DashboardLayout>
   );
 }
+
+const styles: { [key: string]: CSSProperties } = {
+  tableHeader: {
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
+    backgroundColor: "#1B201F",
+  },
+  tableBody: {
+    maxHeight: "85vh",
+    width: "100%",
+    overflowY: "auto",
+    zIndex: 0,
+  },
+  cell: {
+    verticalAlign: "middle",
+    display: "table-cell",
+  },
+};

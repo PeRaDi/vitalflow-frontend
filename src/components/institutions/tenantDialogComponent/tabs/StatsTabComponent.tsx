@@ -1,5 +1,5 @@
 import { Tenant } from "@/types/tenant";
-import { Box, Card, Flex, Text } from "@radix-ui/themes";
+import { Flex, Text } from "@radix-ui/themes";
 
 interface StatsTabComponentProps {
   tenant: Tenant;

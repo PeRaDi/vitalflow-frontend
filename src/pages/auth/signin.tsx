@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { handleSignin, handleVerifyToken } from "@/modules/auth/authService";
-import { User } from "@/types/user";
+import { getUserInformation } from "@/modules/users/usersService";
 import {
   Box,
   Button,
@@ -52,15 +52,23 @@ export default function SigninPage() {
       password,
     });
 
-    const user: User = response.data;
-    setIsPending(false);
-
     if (response.success) {
-      await signIn(user);
-      router.push("/dashboard");
+      const userInfoResponse = await getUserInformation();
+      if (userInfoResponse.success) {
+        const user = userInfoResponse.data;
+        setIsPending(false);
+        await signIn(user);
+        router.push("/dashboard");
+      } else {
+        console.error(
+          "Failed to fetch user information:",
+          userInfoResponse.message
+        );
+      }
     }
 
     toast(response.message, { type: response.success ? "success" : "error" });
+    setIsPending(false);
   };
 
   return (

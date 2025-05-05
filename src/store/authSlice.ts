@@ -1,4 +1,3 @@
-import { handleSignout } from "@/modules/auth/authService";
 import { User } from "@/types/user";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
@@ -19,6 +18,7 @@ const authSlice = createSlice({
     login: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       state.isAuthenticated = true;
+      console.log(state);
     },
     logout: (state) => {
       state.user = null;

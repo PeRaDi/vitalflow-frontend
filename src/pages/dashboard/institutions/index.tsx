@@ -6,10 +6,9 @@ import { setTenants, updateTenant } from "@/store/tenantsSlice";
 import { Tenant } from "@/types/tenant";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Card, Flex, Switch, Table, TextField } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import "./tenants.css";
 
 export default function DashboardTenants() {
   const dispatch = useDispatch();
@@ -152,11 +151,13 @@ export default function DashboardTenants() {
               ) : (
                 filteredTenants.map((tenant) => (
                   <Table.Row key={tenant.id}>
-                    <Table.Cell className="cell">{tenant.id}</Table.Cell>
-                    <Table.Cell className="cell">{tenant.name}</Table.Cell>
-                    <Table.Cell className="cell">{tenant.email}</Table.Cell>
-                    <Table.Cell className="cell">{tenant.address}</Table.Cell>
-                    <Table.Cell className="cell">
+                    <Table.Cell style={styles.cell}>{tenant.id}</Table.Cell>
+                    <Table.Cell style={styles.cell}>{tenant.name}</Table.Cell>
+                    <Table.Cell style={styles.cell}>{tenant.email}</Table.Cell>
+                    <Table.Cell style={styles.cell}>
+                      {tenant.address}
+                    </Table.Cell>
+                    <Table.Cell style={styles.cell}>
                       <Switch
                         checked={tenant.active}
                         onClick={() => handleToggleTenant(tenant)}
@@ -178,3 +179,22 @@ export default function DashboardTenants() {
     </DashboardLayout>
   );
 }
+
+const styles: { [key: string]: CSSProperties } = {
+  tableHeader: {
+    position: "sticky",
+    top: 0,
+    zIndex: 1,
+    backgroundColor: "#1B201F",
+  },
+  tableBody: {
+    maxHeight: "85vh",
+    width: "100%",
+    overflowY: "auto",
+    zIndex: 0,
+  },
+  cell: {
+    verticalAlign: "middle",
+    display: "table-cell",
+  },
+};

@@ -1,7 +1,7 @@
+import { User } from "@/types/user";
 import { createContext, useContext } from "react";
 import { useAppDispatch, useAppSelector } from "../store";
 import { login, logout } from "../store/authSlice";
-import { User } from "@/types/user";
 
 interface AuthContextType {
   user: User;
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <AuthContext.Provider
       value={{
-        user: auth.user,
+        user: auth.user!,
         isAuthenticated: auth.isAuthenticated,
         signIn,
         signOut,

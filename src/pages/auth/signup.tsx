@@ -64,6 +64,8 @@ export default function SignupPage() {
 
     setIsPending(false);
 
+    console.log(response);
+
     toast(response.message, { type: response.success ? "success" : "error" });
 
     if (response.success) router.push("/auth/signin");

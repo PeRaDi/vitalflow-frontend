@@ -1,13 +1,13 @@
-import type { AppProps } from "next/app";
-import { Bounce, ToastContainer } from "react-toastify";
-import { Nunito } from "next/font/google";
-import { Theme } from "@radix-ui/themes";
-import "../styles/globals.css";
-import "@radix-ui/themes/styles.css";
 import { AuthProvider } from "@/context/AuthContext";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "@/store";
+import { Theme } from "@radix-ui/themes";
+import "@radix-ui/themes/styles.css";
+import type { AppProps } from "next/app";
+import { Nunito } from "next/font/google";
+import { Provider } from "react-redux";
+import { Bounce, ToastContainer } from "react-toastify";
+import { PersistGate } from "redux-persist/integration/react";
+import "../styles/globals.css";
 
 const nunito = Nunito({
   subsets: ["latin"],
