@@ -33,7 +33,6 @@ export default function CreateItemDialogComponent({
   }, [open]);
 
   const handleCreate = async (e: React.FormEvent) => {
-    console.log("Creating item", { name, description, criticality });
     if (!name || !description || !criticality) return;
     e.preventDefault();
 

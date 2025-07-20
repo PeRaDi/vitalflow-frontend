@@ -18,6 +18,7 @@ export async function handleSignin(signinDto: SigninDto): Promise<Response> {
       status: responseSignin.status,
     };
   } catch (error: any) {
+    console.error(error);
     if (error.response) {
       return {
         success: false,
@@ -25,7 +26,6 @@ export async function handleSignin(signinDto: SigninDto): Promise<Response> {
         status: error.status,
       };
     }
-    //console.error(error);
     return {
       success: false,
       message: "An unknown error occurred signing in.",

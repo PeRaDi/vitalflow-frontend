@@ -3,8 +3,10 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./authSlice";
+import consumptionChartReducer from "./consumptionChartSlice";
 import invitedUsersReducer from "./invitedUsersSlice";
 import itemsReducer from "./itemsSlice";
+import stockedItemsReducer from "./stockedItemsSlice";
 import tenantsReducer from "./tenantsSlice";
 import usersReducer from "./usersSlice";
 
@@ -22,6 +24,8 @@ export const store = configureStore({
     users: usersReducer,
     invitedUsers: invitedUsersReducer,
     items: itemsReducer,
+    stockedItems: stockedItemsReducer,
+    consumptionChart: consumptionChartReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

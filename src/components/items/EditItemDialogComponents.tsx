@@ -1,5 +1,5 @@
-import { createItem } from "@/modules/items/itemsService";
-import { CRITICALITY_LEVEL_MAP, CriticalityLevel } from "@/types/enums";
+import { updateItem } from "@/modules/items/itemsService";
+import { CriticalityLevel } from "@/types/enums";
 import { Item } from "@/types/item";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 import {
@@ -11,7 +11,7 @@ import {
   Text,
   TextField,
 } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 
 interface EditItemDialogComponentProps {
@@ -25,31 +25,30 @@ export default function EditItemDialogComponent({
 }: EditItemDialogComponentProps) {
   const [name, setName] = useState(item.name);
   const [description, setDescription] = useState(item.description);
-  const [criticality, setCriticality] = useState<CriticalityLevel | null>(
-    CriticalityLevel(item.criticality)
+  const [criticality, setCriticality] = useState<CriticalityLevel>(
+    item.criticality as CriticalityLevel
   );
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      console.log(item);
-    }
-  }, [open]);
 
   const handleEdit = async (e: React.FormEvent) => {
     if (!name || !description || !criticality) return;
     e.preventDefault();
 
     try {
-      const response = await createItem(name, description, criticality);
+      const updatedItem = { ...item };
+      updatedItem.criticality = criticality;
+      updatedItem.name = name;
+      updatedItem.description = description;
+
+      const response = await updateItem(updatedItem);
       if (!response.success) {
         toast("An error occurred creating a new item.", { type: "error" });
         setOpen(false);
         return;
       }
-      toast("New item created successfully.", { type: "success" });
+      toast("Item update successfully.", { type: "success" });
     } catch (error) {
-      toast("An error occurred creating a new item.", { type: "error" });
+      toast("An error occurred updating a item.", { type: "error" });
       console.error(error);
       setOpen(false);
     } finally {
@@ -59,8 +58,6 @@ export default function EditItemDialogComponent({
   };
 
   const handleCancel = () => {
-    setName("");
-    setDescription("");
     setOpen(false);
   };
 
@@ -106,9 +103,10 @@ export default function EditItemDialogComponent({
                 Criticality
               </Text>
               <Select.Root
-                onValueChange={(value) =>
-                  setCriticality(CRITICALITY_LEVEL_MAP[value])
-                }
+                onValueChange={(value) => {
+                  setCriticality(value as CriticalityLevel);
+                }}
+                defaultValue={item.criticality}
                 required
               >
                 <Select.Trigger style={{ width: "100%" }} />
