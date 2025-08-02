@@ -6,6 +6,7 @@ import {
   Dialog,
   Flex,
   Select,
+  Switch,
   Text,
   TextField,
 } from "@radix-ui/themes";
@@ -21,6 +22,8 @@ export default function CreateItemDialogComponent({
 }: CreateItemDialogComponentProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [leadTime, setLeadTime] = useState(0);
+  const [frequentOrder, setFrequentOrder] = useState(true);
   const [criticality, setCriticality] = useState<CriticalityLevel | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -29,15 +32,23 @@ export default function CreateItemDialogComponent({
       setName("");
       setDescription("");
       setCriticality(null);
+      setLeadTime(0);
+      setFrequentOrder(true);
     }
   }, [open]);
 
   const handleCreate = async (e: React.FormEvent) => {
-    if (!name || !description || !criticality) return;
+    if (!name || !description || !criticality || leadTime <= 0) return;
     e.preventDefault();
 
     try {
-      const response = await createItem(name, description, criticality);
+      const response = await createItem(
+        name,
+        description,
+        criticality,
+        leadTime,
+        frequentOrder
+      );
       if (!response.success) {
         toast("An error occurred creating a new item.", { type: "error" });
         setOpen(false);
@@ -57,6 +68,9 @@ export default function CreateItemDialogComponent({
   const handleCancel = () => {
     setName("");
     setDescription("");
+    setCriticality(null);
+    setLeadTime(0);
+    setFrequentOrder(true);
     setOpen(false);
   };
 
@@ -97,25 +111,47 @@ export default function CreateItemDialogComponent({
                 required
               />
             </label>
+            <Flex justify="between" align="center">
+              <label style={{ width: "48%" }}>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Lead Time
+                </Text>
+                <TextField.Root
+                  onChange={(e) => setLeadTime(Number(e.target.value))}
+                  type="number"
+                  value={leadTime}
+                  required
+                />
+              </label>
+              <label style={{ width: "48%" }}>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Criticality
+                </Text>
+                <Select.Root
+                  onValueChange={(value) =>
+                    setCriticality(CRITICALITY_LEVEL_MAP[value])
+                  }
+                  required
+                >
+                  <Select.Trigger style={{ width: "100%" }} />
+                  <Select.Content>
+                    <Select.Group>
+                      <Select.Item value="high">High</Select.Item>
+                      <Select.Item value="medium">Medium</Select.Item>
+                      <Select.Item value="low">Low</Select.Item>
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </label>
+            </Flex>
             <label>
               <Text as="div" size="2" mb="1" weight="bold">
-                Criticality
+                Frequent Order
               </Text>
-              <Select.Root
-                onValueChange={(value) =>
-                  setCriticality(CRITICALITY_LEVEL_MAP[value])
-                }
-                required
-              >
-                <Select.Trigger style={{ width: "100%" }} />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Item value="high">High</Select.Item>
-                    <Select.Item value="medium">Medium</Select.Item>
-                    <Select.Item value="low">Low</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Switch
+                checked={frequentOrder}
+                onCheckedChange={setFrequentOrder}
+              />
             </label>
           </Flex>
 

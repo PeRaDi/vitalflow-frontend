@@ -8,6 +8,7 @@ import {
   Flex,
   IconButton,
   Select,
+  Switch,
   Text,
   TextField,
 } from "@radix-ui/themes";
@@ -28,10 +29,12 @@ export default function EditItemDialogComponent({
   const [criticality, setCriticality] = useState<CriticalityLevel>(
     item.criticality as CriticalityLevel
   );
+  const [leadTime, setLeadTime] = useState(item.leadTime);
+  const [frequentOrder, setFrequentOrder] = useState(item.frequentOrder);
   const [open, setOpen] = useState(false);
 
   const handleEdit = async (e: React.FormEvent) => {
-    if (!name || !description || !criticality) return;
+    if (!name || !description || !criticality || leadTime <= 0) return;
     e.preventDefault();
 
     try {
@@ -39,6 +42,8 @@ export default function EditItemDialogComponent({
       updatedItem.criticality = criticality;
       updatedItem.name = name;
       updatedItem.description = description;
+      updatedItem.leadTime = leadTime;
+      updatedItem.frequentOrder = frequentOrder;
 
       const response = await updateItem(updatedItem);
       if (!response.success) {
@@ -98,26 +103,48 @@ export default function EditItemDialogComponent({
                 required
               />
             </label>
+            <Flex justify="between" align="center">
+              <label style={{ width: "48%" }}>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Lead Time
+                </Text>
+                <TextField.Root
+                  onChange={(e) => setLeadTime(Number(e.target.value))}
+                  type="number"
+                  value={leadTime}
+                  required
+                />
+              </label>
+              <label>
+                <Text as="div" size="2" mb="1" weight="bold">
+                  Criticality
+                </Text>
+                <Select.Root
+                  onValueChange={(value) => {
+                    setCriticality(value as CriticalityLevel);
+                  }}
+                  defaultValue={item.criticality}
+                  required
+                >
+                  <Select.Trigger style={{ width: "100%" }} />
+                  <Select.Content>
+                    <Select.Group>
+                      <Select.Item value="A">High</Select.Item>
+                      <Select.Item value="B">Medium</Select.Item>
+                      <Select.Item value="C">Low</Select.Item>
+                    </Select.Group>
+                  </Select.Content>
+                </Select.Root>
+              </label>
+            </Flex>
             <label>
               <Text as="div" size="2" mb="1" weight="bold">
-                Criticality
+                Frequent Order
               </Text>
-              <Select.Root
-                onValueChange={(value) => {
-                  setCriticality(value as CriticalityLevel);
-                }}
-                defaultValue={item.criticality}
-                required
-              >
-                <Select.Trigger style={{ width: "100%" }} />
-                <Select.Content>
-                  <Select.Group>
-                    <Select.Item value="A">High</Select.Item>
-                    <Select.Item value="B">Medium</Select.Item>
-                    <Select.Item value="C">Low</Select.Item>
-                  </Select.Group>
-                </Select.Content>
-              </Select.Root>
+              <Switch
+                checked={frequentOrder}
+                onCheckedChange={setFrequentOrder}
+              />
             </label>
           </Flex>
 

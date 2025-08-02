@@ -8,5 +8,7 @@ export interface Item {
   createdAt: string;
   updatedAt: string;
   criticality: CriticalityLevel;
+  leadTime: number;
+  frequentOrder: boolean;
   [key: string]: any;
 }

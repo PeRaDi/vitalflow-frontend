@@ -170,3 +170,90 @@ export async function createTransaction(
     };
   }
 }
+
+export async function trainModel(itemId: number): Promise<Response> {
+  try {
+    const response = await api.put(`/items/transactions/${itemId}/train`, {
+      withCredentials: true,
+    });
+    const { data } = response.data;
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred training model.",
+      status: 500,
+    };
+  }
+}
+
+export async function forecastModel(itemId: number): Promise<Response> {
+  try {
+    const response = await api.put(`/items/transactions/${itemId}/forecast`, {
+      withCredentials: true,
+    });
+    const { data } = response.data;
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred training model.",
+      status: 500,
+    };
+  }
+}
+
+export async function fetchJobs(itemId: number): Promise<Response> {
+  try {
+    const response = await api.get(`/items/transactions/${itemId}/jobs`, {
+      withCredentials: true,
+    });
+    const { data } = response.data;
+    return {
+      success: response.status == 200,
+      message: response.data.message,
+      data,
+      status: response.status,
+    };
+  } catch (error: any) {
+    if (error.response) {
+      return {
+        success: false,
+        message: error.response.data.message,
+        status: error.response.status,
+      };
+    }
+    console.error(error);
+    return {
+      success: false,
+      message: "An unknown error occurred fetching pending jobs.",
+      status: 500,
+    };
+  }
+}

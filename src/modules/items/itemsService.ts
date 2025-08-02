@@ -34,12 +34,14 @@ export async function getItems(): Promise<Response> {
 export async function createItem(
   name: string,
   description: string,
-  criticality: CriticalityLevel
+  criticality: CriticalityLevel,
+  leadTime: number,
+  frequentOrder: boolean
 ): Promise<Response> {
   try {
     const response = await api.post(
       "/items",
-      { name, description, criticality },
+      { name, description, criticality, leadTime, frequentOrder },
       { withCredentials: true }
     );
 

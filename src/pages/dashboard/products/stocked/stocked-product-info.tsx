@@ -1,6 +1,9 @@
 import {
   createTransaction,
+  fetchJobs,
+  forecastModel,
   getItemStats,
+  trainModel,
 } from "@/modules/items/transactionsService";
 import { useAppDispatch } from "@/store";
 import {
@@ -12,6 +15,8 @@ import {
   DoubleArrowUpIcon,
   HandIcon,
   IdCardIcon,
+  LightningBoltIcon,
+  LoopIcon,
   MinusIcon,
   Pencil1Icon,
   PlusIcon,
@@ -24,7 +29,10 @@ import {
   Skeleton,
   Text,
   TextField,
+  Tooltip,
 } from "@radix-ui/themes";
+
+import JobListDialogComponent from "@/components/items/JobListDialogComponent";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ConsumptionChart } from "./consumption-chart";
@@ -71,9 +79,47 @@ export default function StockedProductInfo({
     }
   };
 
+  const handleTrainModel = async (itemId: number) => {
+    try {
+      const { success, message } = await trainModel(itemId);
+      toast(message, { type: success ? "success" : "error" });
+    } catch (error) {
+      console.error("Error training model:", error);
+      toast("Error training model", { type: "error" });
+    }
+  };
+
+  const handleForecastStock = async (itemId: number) => {
+    try {
+      const { success, message } = await forecastModel(itemId);
+      toast(message, { type: success ? "success" : "error" });
+    } catch (error) {
+      console.error("Error training model:", error);
+      toast("Error training model", { type: "error" });
+    }
+  };
+
+  const handleFetchJobs = async (itemId: number) => {
+    try {
+      const { success, message, data } = await fetchJobs(itemId);
+      toast(message, { type: success ? "success" : "error" });
+      console.log("Jobs:", data);
+    } catch (error) {
+      console.error("Error fetching jobs:", error);
+      toast("Error fetching jobs", { type: "error" });
+    }
+  };
+
   return (
     <Card style={{ width: "100%", height: "100%" }}>
-      <Header name={name} description={description} />
+      <Header
+        itemId={itemId}
+        name={name}
+        description={description}
+        trainModel={handleTrainModel}
+        forecastModel={handleForecastStock}
+        fetchJobs={handleFetchJobs}
+      />
       <Body
         itemId={itemId}
         stats={itemStats}
@@ -85,8 +131,12 @@ export default function StockedProductInfo({
 }
 
 interface HeaderProps {
+  itemId: number;
   name: string;
   description: string;
+  trainModel: (itemId: number) => void;
+  forecastModel: (itemId: number) => void;
+  fetchJobs: (itemId: number) => void;
 }
 
 interface BodyProps {
@@ -96,16 +146,36 @@ interface BodyProps {
   refresh: () => void;
 }
 
-const Header = ({ name, description }: HeaderProps) => (
-  <Flex direction="column" p="4">
-    <Flex direction="row" width="100%" justify="between" align="center">
+const Header = ({
+  itemId,
+  name,
+  description,
+  trainModel,
+  forecastModel,
+  fetchJobs,
+}: HeaderProps) => (
+  <Flex direction="row" p="4">
+    <Flex direction="column" width="85%" justify="between">
       <Text size="6" weight="bold">
         {name}
+      </Text>{" "}
+      <Text size="3" color="gray">
+        {description}
       </Text>
     </Flex>
-    <Text size="3" color="gray">
-      {description}
-    </Text>
+    <Flex direction="row" width="15%" justify="end" align="center">
+      <Tooltip content="AI - Train Model">
+        <IconButton variant="soft" onClick={() => trainModel(itemId)}>
+          <LoopIcon height="16" width="16" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip content="AI - Forecast Stock">
+        <IconButton m="2" variant="soft" onClick={() => forecastModel(itemId)}>
+          <LightningBoltIcon height="16" width="16" />
+        </IconButton>
+      </Tooltip>
+      <JobListDialogComponent itemId={itemId} />
+    </Flex>
   </Flex>
 );
 
